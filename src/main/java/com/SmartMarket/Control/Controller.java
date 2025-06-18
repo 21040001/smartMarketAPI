@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.SmartMarket.Entity.MonthFoyda;
 import com.SmartMarket.Entity.ProductsObject;
 import com.SmartMarket.Entity.Sales;
 import com.SmartMarket.Entity.SalesObject;
@@ -41,9 +42,9 @@ public class Controller implements ControllerInterface{
 
 	@Override
 	@GetMapping("/product/{id}")
-	public ProductsObject getProduct(@PathVariable("id") int id) {
+	public ProductsObject getProduct(@RequestParam int storeId,@PathVariable("id") int id) {
 		// TODO Auto-generated method stub
-		return service.getProduct(id);
+		return service.getProduct(storeId,id);
 	}
 
 	@Override
@@ -111,6 +112,31 @@ public class Controller implements ControllerInterface{
 			@RequestParam int store_id, 
 			@RequestParam String newPassword) {
 		service.updatePassword(store_id, newPassword);
+	}
+
+	@Override
+	@GetMapping("/update/month")
+	public void updateMonthFoyda(
+			@RequestParam int storeId, 
+			@RequestParam LocalDate date, 
+			@RequestParam long eski, 
+			@RequestParam long yeni) {
+		service.updateMonthFoyda(storeId, date, eski, yeni);
+	}
+
+	@Override
+	@GetMapping("/get/month")
+	public List<MonthFoyda> getMonthFoyda(
+			@RequestParam int storeId, 
+			@RequestParam LocalDate date) {
+		return service.getMonthFoyda(storeId, date);
+	}
+
+	@Override
+	@GetMapping("/update/product/foyda")
+	public void updateProductMonthFoyda(
+			@RequestParam int storeId, @RequestParam int productId, @RequestParam int newValue) {
+		service.updateProductMonthFoyda(storeId, productId, newValue);
 	}
 	}
 

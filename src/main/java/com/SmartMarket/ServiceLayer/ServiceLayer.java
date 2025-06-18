@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.SmartMarket.Entity.MonthFoyda;
 import com.SmartMarket.Entity.ProductsObject;
 import com.SmartMarket.Entity.Sales;
 import com.SmartMarket.Entity.Stores;
@@ -17,13 +18,15 @@ public class ServiceLayer implements ServiceLayerInterface{
 	private final DALProductInterface products;
 	private final DALSalesInterface sale;
 	private final DALStoresInterface store;
+	private final MonthInterface month;
 	
 	public ServiceLayer(DALProductInterface products, DALSalesInterface sale,
-			DALStoresInterface store) {
+			DALStoresInterface store, MonthInterface month) {
 		super();
 		this.products = products;
 		this.sale = sale;
 		this.store = store;
+		this.month = month;
 	}
 
 	@Override
@@ -32,8 +35,8 @@ public class ServiceLayer implements ServiceLayerInterface{
 	}
 
 	@Override
-	public ProductsObject getProduct(int id) {
-		return products.getProduct(id);
+	public ProductsObject getProduct(int storeId,int id) {
+		return products.getProduct(storeId,id);
 	}
 
 	@Override
@@ -82,6 +85,21 @@ public class ServiceLayer implements ServiceLayerInterface{
 	public void updatePassword(int store_id, String newPassword) {
 		store.updatePassword(store_id, newPassword);
 		
+	}
+
+	@Override
+	public void updateMonthFoyda(int storeId, LocalDate date, long eski, long yeni) {
+		month.updateMonthFoyda(storeId, date, eski, yeni);
+	}
+
+	@Override
+	public List<MonthFoyda> getMonthFoyda(int storeId, LocalDate date) {
+		return month.getMonthFoyda(storeId, date);
+	}
+
+	@Override
+	public void updateProductMonthFoyda(int storeId, int productId, int newValue) {
+		products.updateProductMonthFoyda(storeId, productId, newValue);
 	}
 	
 	

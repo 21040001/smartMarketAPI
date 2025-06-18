@@ -54,10 +54,12 @@ public class DALProduct implements DALProductInterface{
 	}
 
 	@Override
-	public ProductsObject getProduct(int id) {
+	public ProductsObject getProduct(int storeId, int id) {
 		try {
 	        Session session = entityManager.unwrap(Session.class);
-	        ProductsObject product = session.get(ProductsObject.class, id);
+	        String sql = "Select * from Products where barcode ='"+id+"' and store_id='"+storeId+"'";
+	        ProductsObject product = session.createNativeQuery(sql, ProductsObject.class)
+	        		.getSingleResult();
 	        return product;
 	    } catch (Exception e) {
 	        System.out.println("Mahsulot topilmadi: " + e.getMessage());
@@ -75,6 +77,16 @@ public class DALProduct implements DALProductInterface{
 	                                           .getResultList();
 
 	    return products;
+	}
+
+	@Override
+	@Transactional
+	public void updateProductMonthFoyda(int storeId, int productId, int newValue) {
+		Session session = entityManager.unwrap(Session.class);
+		
+		String sql = "Update Products set month_foyda = "+newValue+" where store_id ='"+storeId+"' and barcode ='"+productId+"'";
+		session.createNativeQuery(sql, Void.class).executeUpdate();
+		
 	}
 
 	

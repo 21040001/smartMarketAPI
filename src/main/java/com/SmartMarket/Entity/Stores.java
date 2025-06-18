@@ -17,6 +17,11 @@ public class Stores {
 	private String adress;
 	@Column(name = "password")
 	private String password;
+	@Column(name = "email")
+	private String email;
+	@Column(name = "number")
+	private String number;
+	
 	public int getStoreId() {
 		return storeId;
 	}
@@ -40,6 +45,18 @@ public class Stores {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getNumber() {
+		return number;
+	}
+	public void setNumber(String number) {
+		this.number = number;
 	}
 	
 	

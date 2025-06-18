@@ -1,5 +1,7 @@
 package com.SmartMarket.Entity;
 
+
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,9 +12,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="Products")
 public class ProductsObject {
+	
 	@Id
-	@Column(name = "productId")
-	private String productId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "productId")
+    private int productId;
 	@Column(name = "storeId")
 	private String storeId;
 	@Column(name = "barcode")
@@ -25,10 +29,16 @@ public class ProductsObject {
 	private String costPrice;
 	@Column(name = "salePrice")
 	private String salePrice;
-	public String getProductId() {
+	@Column(name = "foyda")
+	private String foyda;
+	@Column(name = "monthFoyda")
+	private Long monthFoyda;
+	
+	
+	public int getProductId() {
 		return productId;
 	}
-	public void setProductId(String productId) {
+	public void setProductId(int productId) {
 		this.productId = productId;
 	}
 	public String getStoreId() {
@@ -66,6 +76,18 @@ public class ProductsObject {
 	}
 	public void setSalePrice(String salePrice) {
 		this.salePrice = salePrice;
+	}
+	public String getFoyda() {
+		return foyda;
+	}
+	public void setFoyda(String foyda) {
+		this.foyda = foyda;
+	}
+	public Long getMonthFoyda() {
+		return monthFoyda;
+	}
+	public void setMonthFoyda(Long monthFoyda) {
+		this.monthFoyda = monthFoyda;
 	}
 	
 	

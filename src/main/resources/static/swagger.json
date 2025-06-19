@@ -1,0 +1,579 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SmartMarket API",
+    "description": "Do‘kon mahsulotlari va savdo API’si",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "paths": {
+    "/add": {
+      "post": {
+        "summary": "Mahsulot qo‘shish",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductsObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mahsulot muvaffaqiyatli qo‘shildi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product/{id}": {
+      "get": {
+        "summary": "Id bo‘yicha mahsulot ma’lumotlarini olish",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Do‘kon ID si"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mahsulot ID si"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mahsulot ma’lumotlari",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductsObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Mahsulot topilmadi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete": {
+      "post": {
+        "summary": "Mahsulot o‘chirish",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductsObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mahsulot o‘chirildi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update": {
+      "post": {
+        "summary": "Mahsulot ma’lumotlarini yangilash",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductsObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mahsulot yangilandi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logIn/{id}": {
+      "get": {
+        "summary": "Do‘kon parolini olish",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Do‘kon ID si"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parol",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/store/{id}": {
+      "get": {
+        "summary": "Do‘kon ma’lumotlarini olish",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Do‘kon ID si"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Do‘kon ma’lumotlari",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stores"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Do‘kon mahsulotlarini olish",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Do‘kon ID si"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mahsulotlar ro‘yxati",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductsObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/addSales": {
+      "post": {
+        "summary": "Savdo qo‘shish",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalesObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Savdo muvaffaqiyatli qo‘shildi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sales/today": {
+      "get": {
+        "summary": "Bugungi savdolarni olish",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "todayDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "tomorrowDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bugungi savdolar ro‘yxati",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sales"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update/password": {
+      "get": {
+        "summary": "Do‘kon parolini yangilash",
+        "parameters": [
+          {
+            "name": "store_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "newPassword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parol yangilandi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update/month": {
+      "get": {
+        "summary": "Oy foydasini yangilash",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "eski",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "yeni",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Oy foydasi yangilandi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get/month": {
+      "get": {
+        "summary": "Oy foydasini olish",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Oy foydasi ro‘yxati",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MonthFoyda"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update/product/foyda": {
+      "get": {
+        "summary": "Mahsulot oy foydasini yangilash",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "productId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "newValue",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mahsulot foydasi yangilandi",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProductsObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 101
+          },
+          "storeId": {
+            "type": "integer",
+            "example": 123
+          },
+          "name": {
+            "type": "string",
+            "example": "Pomidor"
+          },
+          "salePrice": {
+            "type": "number",
+            "format": "double",
+            "example": 3500
+          },
+          "foyda": {
+            "type": "string",
+            "example": "500"
+          }
+        }
+      },
+      "Stores": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "integer",
+            "example": 123
+          },
+          "storeName": {
+            "type": "string",
+            "example": "SmartMarket"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        }
+      },
+      "SalesObject": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "integer",
+            "example": 123
+          },
+          "saleDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-19T10:00:00"
+          },
+          "totalPrice": {
+            "type": "integer",
+            "example": 100000
+          }
+        }
+      },
+      "Sales": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "integer",
+            "example": 123
+          },
+          "saleDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-19T10:00:00"
+          },
+          "totalPrice": {
+            "type": "integer",
+            "example": 100000
+          }
+        }
+      },
+      "MonthFoyda": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "storeId": {
+            "type": "integer",
+            "example": 123
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-06-01"
+          },
+          "monthFoyda": {
+            "type": "integer",
+            "example": 5000
+          }
+        }
+      }
+    }
+  }
+}

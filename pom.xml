@@ -43,6 +43,13 @@
             <artifactId>mssql-jdbc</artifactId>
             <version>12.4.2.jre11</version> 
         </dependency>
+        <!-- Api documatsyasi uchun foydalaniladi-->
+        <dependency>
+    		<groupId>org.springdoc</groupId>
+    		<artifactId>springdoc-openapi-ui</artifactId>
+   			<version>1.7.0</version>  <!-- en güncel sürümü kontrol edin -->
+		</dependency>
+
 
         <!-- Testlar uchun -->
         <dependency>

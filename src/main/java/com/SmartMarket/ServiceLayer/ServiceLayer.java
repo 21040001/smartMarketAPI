@@ -1,10 +1,10 @@
+// Kerakli kutubxonalarni import qilish
 package com.SmartMarket.ServiceLayer;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service; // Spring'ning servis annotatsiyasi
 
 import com.SmartMarket.Entity.MonthFoyda;
 import com.SmartMarket.Entity.ProductsObject;
@@ -12,14 +12,19 @@ import com.SmartMarket.Entity.Sales;
 import com.SmartMarket.Entity.Stores;
 import com.SmartMarket.HibernateDAL.*;
 
-@Service
-public class ServiceLayer implements ServiceLayerInterface{
+import jakarta.transaction.Transactional;
 
+// Service deb belgilanmoqda - bu sinf servis funksiyalarini bajaradi
+@Service
+public class ServiceLayer implements ServiceLayerInterface {
+
+	// Private o'zgaruvchilar - kerakli data access layer interfeyslar
 	private final DALProductInterface products;
 	private final DALSalesInterface sale;
 	private final DALStoresInterface store;
 	private final MonthInterface month;
 	
+	// Konstruktor - xizmat qatlamiga DAL qatlamlarini yuboradi (dependency injection)
 	public ServiceLayer(DALProductInterface products, DALSalesInterface sale,
 			DALStoresInterface store, MonthInterface month) {
 		super();
@@ -29,78 +34,96 @@ public class ServiceLayer implements ServiceLayerInterface{
 		this.month = month;
 	}
 
+	// Mahsulot qo'shish funksiyasi
 	@Override
+	@Transactional // Bitta butun tranzaksiyada amalga oshiriladi
 	public void addProduct(ProductsObject product) {
-		products.addProduct(product);
+		products.save(product); // Mahsulotni saqlash
 	}
 
+	// ID bo'yicha mahsulot olish funksiyasi
 	@Override
-	public ProductsObject getProduct(int storeId,int id) {
-		return products.getProduct(storeId,id);
+	@Transactional
+	public ProductsObject getProduct(int storeId, int id) {
+		return products.findByStoreIdAndBarcode(String.valueOf(storeId), String.valueOf(id));
 	}
 
+	// Mahsulotni o'chirish funksiyasi
 	@Override
+	@Transactional
 	public void deleteProduct(ProductsObject product) {
-		products.deleteProduct(product);
+		products.delete(product);
 	}
 
+	// Mahsulotni yangilash funksiyasi
 	@Override
+	@Transactional
 	public void updateProduct(ProductsObject product) {
-		products.updateProduct(product);
+		products.save(product); // `save()` bu yerda yangilashni ham bajaradi
 	}
 
-	
-
+	// Do'kon parolini olish
 	@Override
 	public String getPasword(int store_id) {
-		// TODO Auto-generated method stub
 		return store.getPasword(store_id);
 	}
 
+	// ID bo'yicha do'kon ma'lumotini olish
 	@Override
 	public Stores getStore(int store_id) {
-		// TODO Auto-generated method stub
-		return store.getStore(store_id);
+		return store.findByStoreId(store_id);
 	}
 
+	// Barcha mahsulotlarni olish (do'kon ID bo'yicha)
 	@Override
+	@Transactional
 	public List<ProductsObject> getAllProducts(int id) {
-		
-		return products.getAllProducts(id);
+		return products.findByStoreId(String.valueOf(id));
 	}
 
+	// Savdo qo'shish funksiyasi
 	@Override
 	public void addSales(Sales sales) {
 		sale.addSales(sales);
-		
 	}
 
+	// Bugungi savdolarni olish (kunlik savdolar)
 	@Override
 	public List<Sales> getTodaySales(int storeId, LocalDate todayDate, LocalDate tommorowDate) {
-		
 		return sale.getTodaySales(storeId, todayDate, tommorowDate);
 	}
 
+	// Do'kon parolini yangilash
 	@Override
 	public void updatePassword(int store_id, String newPassword) {
-		store.updatePassword(store_id, newPassword);
-		
+		Stores st = getStore(store_id); // Do'konni olish
+		st.setPassword(newPassword);    // Yangi parol o'rnatish
+		store.save(st);                 // Saqlash
 	}
 
+	// Oylik foydani yangilash (eski va yangi qiymatlarni qo‘shish orqali)
 	@Override
-	public void updateMonthFoyda(int storeId, LocalDate date, long eski, long yeni) {
-		month.updateMonthFoyda(storeId, date, eski, yeni);
+	@Transactional
+	public void updateMonthFoyda(int storeId, LocalDate date, long eski, long yangi) {
+		long foyda = yangi + eski; // Yangi foyda hisoblash
+		month.updateMonthFoyda(storeId, date, foyda);
 	}
 
+	// Do'kon va oy bo‘yicha foydani olish
 	@Override
+	@Transactional
 	public List<MonthFoyda> getMonthFoyda(int storeId, LocalDate date) {
-		return month.getMonthFoyda(storeId, date);
+		return month.findByStoreIdAndDateMonthYear(storeId, date);
 	}
 
+	// Mahsulotga tegishli oylik foydani yangilash
 	@Override
+	@Transactional
 	public void updateProductMonthFoyda(int storeId, int productId, int newValue) {
-		products.updateProductMonthFoyda(storeId, productId, newValue);
+		products.updateMonthFoyda(
+			String.valueOf(storeId),
+			String.valueOf(productId),
+			Long.valueOf(newValue)
+		);
 	}
-	
-	
 }

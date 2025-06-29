@@ -81,17 +81,7 @@ public class ServiceLayer implements ServiceLayerInterface {
 		return products.findByStoreId(String.valueOf(id));
 	}
 
-	// Savdo qo'shish funksiyasi
-	@Override
-	public void addSales(Sales sales) {
-		sale.addSales(sales);
-	}
-
-	// Bugungi savdolarni olish (kunlik savdolar)
-	@Override
-	public List<Sales> getTodaySales(int storeId, LocalDate todayDate, LocalDate tommorowDate) {
-		return sale.getTodaySales(storeId, todayDate, tommorowDate);
-	}
+	
 
 	// Do'kon parolini yangilash
 	@Override
@@ -125,5 +115,44 @@ public class ServiceLayer implements ServiceLayerInterface {
 			String.valueOf(productId),
 			Long.valueOf(newValue)
 		);
+	}
+
+	@Override
+	public int updateStock(String storeId, String barcode, String newStock) {
+		// TODO Auto-generated method stub
+		return products.updateStock(storeId, barcode, newStock);
+	}
+
+	@Override
+	public long foydaFindByStoreIdAndDateMonthYear(int storeId, LocalDate date) {
+		// TODO Auto-generated method stub
+		return month.foydaFindByStoreIdAndDateMonthYear(storeId, date);
+	}
+
+	@Override
+	public void addSale(Sales s) {
+		sale.save(s);
+	}
+
+	@Override
+	public Sales getSale(int id) {
+		return sale.getSale(id);
+	}
+
+	@Override
+	public List<Sales> getAllSale(int storeId) {
+		return sale.getAllSale(storeId);
+	}
+
+	@Override
+	public List<Sales> getTodayAllSales(int storeId, LocalDate date) {
+		LocalDate tomorow = date.plusDays(1);
+		return sale.getTodayAllSales(storeId, date, tomorow);
+	}
+
+	@Override
+	public void updateStore(Stores s) {
+		store.save(s);
+		
 	}
 }

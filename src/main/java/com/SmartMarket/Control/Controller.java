@@ -3,7 +3,6 @@ package com.SmartMarket.Control;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.SmartMarket.Entity.MonthFoyda;
 import com.SmartMarket.Entity.ProductsObject;
 import com.SmartMarket.Entity.Sales;
-import com.SmartMarket.Entity.SalesObject;
 import com.SmartMarket.Entity.Stores;
 import com.SmartMarket.ServiceLayer.ServiceLayer;
 
@@ -76,29 +74,6 @@ public class Controller implements ControllerInterface {
         return ResponseEntity.ok(service.getAllProducts(id));
     }
 
-    @PostMapping("/addSales")
-    public ResponseEntity<String> addSales(@RequestBody SalesObject salesObject) {
-        Sales sales = new Sales();
-        sales.setStoreId(salesObject.getStoreId());
-        sales.setSaleDate(salesObject.getSaleDate());
-        sales.setTotalPrice(salesObject.getTotalPrice());
-
-        service.addSales(sales);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Savdo muvaffaqiyatli qo‘shildi");
-    }
-
-    @GetMapping("/sales/today")
-    public ResponseEntity<List<Sales>> getTodaySales(
-            @RequestParam int storeId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate todayDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomorrowDate) {
-
-        if (tomorrowDate == null) {
-            tomorrowDate = todayDate.plusDays(1);
-        }
-
-        return ResponseEntity.ok(service.getTodaySales(storeId, todayDate, tomorrowDate));
-    }
 
     @Override
     @GetMapping("/update/password")
@@ -135,4 +110,53 @@ public class Controller implements ControllerInterface {
         service.updateProductMonthFoyda(storeId, productId, newValue);
         return ResponseEntity.ok("Mahsulot foydasi yangilandi");
     }
+
+	@Override
+	@GetMapping("/update/product/stock")
+	public ResponseEntity<Integer> updateStock(
+			@RequestParam String storeId, 
+			@RequestParam String barcode, 
+			@RequestParam String newStock) {
+		return ResponseEntity.ok(service.updateStock(storeId, barcode, newStock));
+	}
+
+	@Override
+	@GetMapping("/get/day")
+	public ResponseEntity<Long> foydaFindByStoreIdAndDateMonthYear(
+			@RequestParam int storeId, 
+			@RequestParam LocalDate date) {
+		return ResponseEntity.ok(service.foydaFindByStoreIdAndDateMonthYear(storeId, date));
+	}
+
+	@Override
+	@PostMapping("/add/sale")
+	public ResponseEntity<String> addSale(@RequestBody Sales s) {
+		service.addSale(s);
+		return ResponseEntity.ok("Succesfully");
+	}
+
+	@Override
+	@GetMapping("/get/sale")
+	public ResponseEntity<Sales> getSale(@RequestParam int id) {
+		return ResponseEntity.ok(service.getSale(id));
+	}
+
+	@Override
+	@GetMapping("/get/allsale")
+	public ResponseEntity<List<Sales>> getAllSale(@RequestParam int storeId) {
+		return ResponseEntity.ok(service.getAllSale(storeId));
+	}
+
+	@Override
+	@GetMapping("/get/allsale/today")
+	public ResponseEntity<List<Sales>> getTodayAllSales(@RequestParam int storeId, @RequestParam LocalDate date) {
+		return ResponseEntity.ok(service.getTodayAllSales(storeId, date));
+	}
+
+	@PostMapping("/update/store")
+	public ResponseEntity<String> updateStore(@RequestBody Stores store) {
+	    service.updateStore(store);
+	    return ResponseEntity.ok("Store updated successfully");
+	}
+
 }

@@ -226,81 +226,6 @@
         }
       }
     },
-    "/addSales": {
-      "post": {
-        "summary": "Savdo qo‘shish",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SalesObject"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Savdo muvaffaqiyatli qo‘shildi",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sales/today": {
-      "get": {
-        "summary": "Bugungi savdolarni olish",
-        "parameters": [
-          {
-            "name": "storeId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "todayDate",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          },
-          {
-            "name": "tomorrowDate",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Bugungi savdolar ro‘yxati",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Sales"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/update/password": {
       "get": {
         "summary": "Do‘kon parolini yangilash",
@@ -426,7 +351,183 @@
           }
         }
       }
-    },
+    },	  {
+	    "paths": {
+	      "/add/sale": {
+	        "get": {
+	          "summary": "Yangi savdo qo‘shish",
+	          "description": "Yangi savdo obyektini (Sales) qo‘shadi.",
+	          "requestBody": {
+	            "required": true,
+	            "content": {
+	              "application/json": {
+	                "schema": {
+	                  "$ref": "#/components/schemas/Sales"
+	                }
+	              }
+	            }
+	          },
+	          "responses": {
+	            "200": {
+	              "description": "Savdo muvaffaqiyatli qo‘shildi",
+	              "content": {
+	                "text/plain": {
+	                  "schema": {
+	                    "type": "string"
+	                  }
+	                }
+	              }
+	            }
+	          },
+	          "tags": ["Sales"]
+	        }
+	      },
+	      "/get/sale": {
+	        "get": {
+	          "summary": "ID orqali savdoni olish",
+	          "description": "Berilgan ID bo‘yicha bitta savdoni qaytaradi.",
+	          "parameters": [
+	            {
+	              "in": "query",
+	              "name": "id",
+	              "required": true,
+	              "schema": {
+	                "type": "integer"
+	              },
+	              "description": "Savdo ID raqami"
+	            }
+	          ],
+	          "responses": {
+	            "200": {
+	              "description": "Topilgan savdo",
+	              "content": {
+	                "application/json": {
+	                  "schema": {
+	                    "$ref": "#/components/schemas/Sales"
+	                  }
+	                }
+	              }
+	            },
+	            "404": {
+	              "description": "Savdo topilmadi"
+	            }
+	          },
+	          "tags": ["Sales"]
+	        }
+	      },
+	      "/get/allsale": {
+	        "get": {
+	          "summary": "Do‘kondagi barcha savdolarni olish",
+	          "description": "Berilgan do‘kon ID uchun barcha savdolar ro‘yxatini qaytaradi.",
+	          "parameters": [
+	            {
+	              "in": "query",
+	              "name": "storeId",
+	              "required": true,
+	              "schema": {
+	                "type": "integer"
+	              },
+	              "description": "Do‘kon ID raqami"
+	            }
+	          ],
+	          "responses": {
+	            "200": {
+	              "description": "Savdolar ro‘yxati",
+	              "content": {
+	                "application/json": {
+	                  "schema": {
+	                    "type": "array",
+	                    "items": {
+	                      "$ref": "#/components/schemas/Sales"
+	                    }
+	                  }
+	                }
+	              }
+	            }
+	          },
+	          "tags": ["Sales"]
+	        }
+	      },
+	      "/get/allsale/today": {
+	        "get": {
+	          "summary": "Bugungi savdolar ro‘yxatini olish",
+	          "description": "Do‘kon ID va sana asosida bugungi savdolar ro‘yxatini qaytaradi.",
+	          "parameters": [
+	            {
+	              "in": "query",
+	              "name": "storeId",
+	              "required": true,
+	              "schema": {
+	                "type": "integer"
+	              },
+	              "description": "Do‘kon ID raqami"
+	            },
+	            {
+	              "in": "query",
+	              "name": "date",
+	              "required": true,
+	              "schema": {
+	                "type": "string",
+	                "format": "date"
+	              },
+	              "description": "Bugungi sana (yyyy-MM-dd formatida)"
+	            }
+	          ],
+	          "responses": {
+	            "200": {
+	              "description": "Bugungi savdolar ro‘yxati",
+	              "content": {
+	                "application/json": {
+	                  "schema": {
+	                    "type": "array",
+	                    "items": {
+	                      "$ref": "#/components/schemas/Sales"
+	                    }
+	                  }
+	                }
+	              }
+	            }
+	          },
+	          "tags": ["Sales"]
+	        }
+	      }
+	    },
+	    "components": {
+	      "schemas": {
+	        "Sales": {
+	          "type": "object",
+	          "properties": {
+	            "id": {
+	              "type": "integer"
+	            },
+	            "storeId": {
+	              "type": "integer"
+	            },
+	            "saleDate": {
+	              "type": "string",
+	              "format": "date-time"
+	            },
+	            "totalPrice": {
+	              "type": "number",
+	              "format": "double"
+	            },
+	            "productName": {
+	              "type": "string"
+	            },
+	            "barcode": {
+	              "type": "string"
+	            },
+	            "quantity": {
+	              "type": "integer"
+	            },
+	            "saleId": {
+	              "type": "integer"
+	            }
+	          }
+	        }
+	      }
+	    }
+	  },
     "/update/product/foyda": {
       "get": {
         "summary": "Mahsulot oy foydasini yangilash",
@@ -516,40 +617,42 @@
           }
         }
       },
-      "SalesObject": {
-        "type": "object",
-        "properties": {
-          "storeId": {
-            "type": "integer",
-            "example": 123
-          },
-          "saleDate": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-06-19T10:00:00"
-          },
-          "totalPrice": {
-            "type": "integer",
-            "example": 100000
-          }
-        }
-      },
       "Sales": {
         "type": "object",
         "properties": {
-          "storeId": {
+          "id": {
             "type": "integer",
             "example": 123
           },
+			"storeId": {
+			  "type": "integer",
+			  "example": 1231
+			},
           "saleDate": {
             "type": "string",
             "format": "date-time",
             "example": "2025-06-19T10:00:00"
           },
           "totalPrice": {
-            "type": "integer",
-            "example": 100000
-          }
+            "type": "double",
+            "example": 10.0000
+          },
+			"productName": {
+			  "type": "string",
+			  "example": "Cola Cola"
+			},
+			"barcode": {
+			  "type": "string",
+			  "example": "12345"
+			},
+			"quantity": {
+			  "type": "integer",
+			  "example": 3
+			},
+			"saleId": {
+			  "type": "integer",
+			  "example": 1234
+			}
         }
       },
       "MonthFoyda": {

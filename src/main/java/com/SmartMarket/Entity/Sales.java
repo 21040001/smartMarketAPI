@@ -15,8 +15,8 @@ public class Sales {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "saleId")
-    private int saleId;
+    @Column(name = "id")
+    private int id;
 
     @Column(name = "storeId")
     private int storeId;
@@ -25,38 +25,87 @@ public class Sales {
     private LocalDateTime saleDate;
 
     @Column(name = "totalPrice")
-    private int totalPrice;
+    private double totalPrice;
 
-    public int getSaleId() {
-        return saleId;
-    }
+    @Column(name = "productName")
+    private String productName;
+    
+    @Column(name = "barcode")
+    private String barcode;
+    
+    @Column(name = "quantity")
+    private int quantity;
+    
+    
+    @Column(name = "isCash")
+    private boolean isCash;
 
-    public void setSaleId(int saleId) {
-        this.saleId = saleId;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public int getStoreId() {
-        return storeId;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
-    }
+	public int getStoreId() {
+		return storeId;
+	}
 
-    public LocalDateTime getSaleDate() {
-        return saleDate;
-    }
+	public void setStoreId(int storeId) {
+		this.storeId = storeId;
+	}
 
-    public void setSaleDate(LocalDateTime saleDate) {
-        this.saleDate = saleDate;
-    }
+	public LocalDateTime getSaleDate() {
+		return saleDate;
+	}
 
-	public int getTotalPrice() {
+	public void setSaleDate(LocalDateTime saleDate) {
+		this.saleDate = saleDate;
+	}
+
+	public double getTotalPrice() {
 		return totalPrice;
 	}
 
-	public void setTotalPrice(int totalPrice) {
+	public void setTotalPrice(double totalPrice) {
 		this.totalPrice = totalPrice;
 	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getBarcode() {
+		return barcode;
+	}
+
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+
+	public boolean getIsCash() {
+		return isCash;
+	}
+
+	public void setIsCash(boolean isCash) {
+		this.isCash = isCash;
+	}
+    
+    
+    
     
 }

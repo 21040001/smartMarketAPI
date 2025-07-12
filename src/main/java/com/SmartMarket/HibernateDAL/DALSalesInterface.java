@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.SmartMarket.Entity.Sales;
 
-//bu DAL SPRING jpa bilan yozilmadi chunki JPA va SALES o'zgaruvchi uyushmasligi bor bu sababdan bu normal JPA bilan tayyorlandi
+
 @Repository
 public interface DALSalesInterface extends JpaRepository<Sales, Long> {
 	

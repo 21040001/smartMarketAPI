@@ -8,15 +8,15 @@ import org.springframework.http.ResponseEntity;
 import com.SmartMarket.Entity.MonthFoyda;
 import com.SmartMarket.Entity.ProductsObject;
 import com.SmartMarket.Entity.Sales;
-import com.SmartMarket.Entity.Stores;
+import com.SmartMarket.dto.StoreDto;
+import com.SmartMarket.dto.StoreUpdateDto;
 
 public interface ControllerInterface {
 	ResponseEntity<String> addProduct(ProductsObject product);
 	ResponseEntity<ProductsObject> getProduct(int storeId,int id);
 	ResponseEntity<String> deleteProduct(ProductsObject product);
 	ResponseEntity<String> updateProduct(ProductsObject product);
-    ResponseEntity<String> getPasword(int store_id);
-	ResponseEntity<Stores> getStore(int store_id);
+	ResponseEntity<StoreDto> getStore(int store_id);
 	ResponseEntity<List<ProductsObject>> getAllProducts(int id);
 	ResponseEntity<String> updatePassword(int store_id, String newPassword);
 	ResponseEntity<String> updateMonthFoyda(int storeId, LocalDate date, long eski, long yeni);
@@ -28,5 +28,5 @@ public interface ControllerInterface {
 	ResponseEntity<Sales> getSale(int id);
 	ResponseEntity<List<Sales>> getAllSale(int storeId);
 	ResponseEntity<List<Sales>> getTodayAllSales(int storeId, LocalDate date);
-	ResponseEntity<String> updateStore(Stores s);
+	ResponseEntity<String> updateStore(StoreUpdateDto s);
 }

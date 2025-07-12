@@ -2,6 +2,7 @@ package com.SmartMarket.HibernateDAL;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -55,7 +56,7 @@ public interface MonthInterface extends JpaRepository<MonthFoyda, Long> {
     );
     
     @Query(value="Select month_foyda from month_foyda where store_id = :storeId AND date = :date", nativeQuery= true)
-    long foydaFindByStoreIdAndDateMonthYear(
+    Optional<Long> foydaFindByStoreIdAndDateMonthYear(
     		@Param("storeId") int storeId, 
     		@Param("date") LocalDate date);
 }

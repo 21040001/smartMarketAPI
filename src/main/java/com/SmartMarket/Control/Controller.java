@@ -42,7 +42,7 @@ public class Controller implements ControllerInterface {
 
     // Mahsulotni olish (Admin, Super admin va Ko'ruvchilar uchun)
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER','VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductsObject> getProduct(
             @RequestParam int storeId,
@@ -77,7 +77,7 @@ public class Controller implements ControllerInterface {
 
     // Do'kon ma'lumotlarini olish (Admin, Super admin va Ko'ruvchilar uchun)
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER','VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/stores/{id}")
     public ResponseEntity<StoreDto> getStore(@PathVariable("id") int store_id) {
         return ResponseEntity.ok(service.getStore(store_id));
@@ -85,7 +85,7 @@ public class Controller implements ControllerInterface {
 
     // Do'kondagi barcha mahsulotlarni olish (Admin, Super admin va Ko'ruvchilar uchun)
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER','VIEWER')")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/stores/{id}/products")
     public ResponseEntity<List<ProductsObject>> getAllProducts(@PathVariable("id") int id) {
         return ResponseEntity.ok(service.getAllProducts(id));

@@ -1,5 +1,7 @@
 package com.SmartMarket.HibernateDAL;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +23,7 @@ public interface DALStoresInterface extends JpaRepository<Stores, Long> {
      */
     @Transactional
     @Query(value = "SELECT s.password FROM Stores s WHERE s.store_id = :storeId", nativeQuery = true)
-    String getPasword(@Param("storeId") int store_id);
+    Optional<String> getPasword(@Param("storeId") int store_id);
 
     /**
      * Spring Data tomonidan avtomatik yoziladigan metod.
@@ -29,5 +31,5 @@ public interface DALStoresInterface extends JpaRepository<Stores, Long> {
      * JPQL (Java Persistence Query Language) asosida ishlaydi.
      */
     @Transactional
-    Stores findByStoreId(int storeId);
+    Optional<Stores> findByStoreId(Integer storeId);// null qiymatlarni oldini olish uchun Optional sinifi bilan ishlayabmiz
 }

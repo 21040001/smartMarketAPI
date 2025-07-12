@@ -2,6 +2,8 @@ package com.SmartMarket.ServiceLayer;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +89,7 @@ public class ServiceLayer implements ServiceLayerInterface {
     @Override
     @Transactional(readOnly = true)
     public ProductsObject getProduct(int storeId, int id) {
-        return products.findByStoreIdAndBarcode(String.valueOf(storeId), String.valueOf(id));
+        return products.findByStoreIdAndBarcode(String.valueOf(storeId), String.valueOf(id)).orElseThrow(()-> new NoSuchElementException("Mahsulot Topilmadi"));
     }
 
     /**
@@ -120,7 +122,7 @@ public class ServiceLayer implements ServiceLayerInterface {
     @Override
     @Transactional(readOnly = true)
     public String getPasword(int store_id) {
-        return store.getPasword(store_id);
+        return store.getPasword(store_id).orElseThrow(()->new RuntimeException("Id yoki parol natogri"));
     }
 
     /**
@@ -131,10 +133,10 @@ public class ServiceLayer implements ServiceLayerInterface {
     @Override
     @Transactional(readOnly = true)
     public StoreDto getStore(int store_id) {
-        Stores stor = store.findByStoreId(store_id);
-        return modelMapper.map(stor, StoreDto.class);
+        return store.findByStoreId(store_id)
+                .map(storeEntity -> modelMapper.map(storeEntity, StoreDto.class))
+                .orElseThrow(() -> new NoSuchElementException("Store not found with ID: " + store_id));
     }
-
     /**
      * Do'kondagi barcha mahsulotlarni olish
      * @param id - do'kon IDsi
@@ -234,7 +236,7 @@ public class ServiceLayer implements ServiceLayerInterface {
     @Override
     @Transactional
     public long foydaFindByStoreIdAndDateMonthYear(int storeId, LocalDate date) {
-        return month.foydaFindByStoreIdAndDateMonthYear(storeId, date);
+        return month.foydaFindByStoreIdAndDateMonthYear(storeId, date).orElseThrow(()->new NoSuchElementException("Oylik foyda yuklana olmadi - mavjud bo'lmagan oyni kiritmoqdasiz"));
     }
 
     /* ========= SOTUVLAR BO'LIMI ========= */
@@ -257,7 +259,7 @@ public class ServiceLayer implements ServiceLayerInterface {
     @Override
     @Transactional(readOnly = true)
     public Sales getSale(int id) {
-        return sale.getSale(id);
+        return sale.getSale(id).orElseThrow(()-> new NoSuchElementException("mavjud idga oid Savdo mavjud emas"));
     }
 
     /**
@@ -294,10 +296,8 @@ public class ServiceLayer implements ServiceLayerInterface {
     @Transactional
     public void updateStore(StoreUpdateDto dto) {
         // Mevcut mağazayı bul
-        Stores storeEntity = store.findByStoreId(dto.getStoreId());
-        if (storeEntity == null) {
-            throw new RuntimeException("Do'kon topilmadi");
-        }
+        Stores storeEntity = store.findByStoreId(dto.getStoreId()).orElseThrow(()-> new RuntimeException("Do'kon topilmadi"));
+        
         
         // DTO'dan Entity'e güncelleme (password hariç)
         modelMapper.map(dto, storeEntity);

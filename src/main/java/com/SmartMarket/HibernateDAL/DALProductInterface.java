@@ -1,16 +1,18 @@
 package com.SmartMarket.HibernateDAL;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.SmartMarket.Entity.ProductsObject;
 
-import jakarta.transaction.Transactional;
+
 
 // Bu interface mahsulotlar bilan ishlovchi data access layer bo‘lib xizmat qiladi
 @Repository
@@ -20,7 +22,7 @@ public interface DALProductInterface extends JpaRepository<ProductsObject, Long>
      * Ma'lum bir do‘kon (storeId) va mahsulot shtrix kodi (barcode) bo‘yicha mahsulotni topish
      */
     @Query("SELECT p FROM ProductsObject p WHERE p.barcode = :barcode AND p.storeId = :storeId")
-    ProductsObject findByStoreIdAndBarcode(@Param("storeId") String storeId, @Param("barcode") String barcode);
+    Optional<ProductsObject> findByStoreIdAndBarcode(@Param("storeId") String storeId, @Param("barcode") String barcode);
 
     /**
      * Do‘kon ID bo‘yicha barcha mahsulotlarni olish (Spring Data avtomatik yaratadi)

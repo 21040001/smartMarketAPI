@@ -2,6 +2,7 @@ package com.SmartMarket.HibernateDAL;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ public interface DALSalesInterface extends JpaRepository<Sales, Long> {
 	
 	@Query(value="Select * from sales where id=:saleId" 
 			, nativeQuery=true)
-	Sales getSale(@Param("saleId") int id);
+	Optional<Sales> getSale(@Param("saleId") int id);
 	
 	@Query(value="Select * from sales where store_id=:storeId" 
 			, nativeQuery=true)

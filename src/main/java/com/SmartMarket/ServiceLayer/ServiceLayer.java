@@ -2,14 +2,14 @@ package com.SmartMarket.ServiceLayer;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,41 +24,32 @@ import com.SmartMarket.dto.AuthRequest;
 import com.SmartMarket.dto.AuthResponse;
 import com.SmartMarket.dto.StoreDto;
 import com.SmartMarket.dto.StoreUpdateDto;
+import com.SmartMarket.exceptions.*;
 import com.SmartMarket.security.CustomUserDetailsService;
 import com.SmartMarket.security.JwtTokenProvider;
+import com.SmartMarket.dto.StoreIdDto;
 
-
-
-/**
- * Asosiy biznes logikani bajaruvchi servis qatlami
- * Barcha ma'lumotlar bazasi operatsiyalari shu yerda amalga oshiriladi
- */
 @Service
 public class ServiceLayer implements ServiceLayerInterface {
 
-    // Ma'lumotlar bazasi bilan ishlash uchun interfeyslar
-    private final DALProductInterface products;  // Mahsulotlar uchun
-    private final DALSalesInterface sale;       // Sotuvlar uchun
-    private final DALStoresInterface store;     // Do'konlar uchun
-    private final MonthInterface month;         // Oylik foydalar uchun
-    
-    // Autentifikatsiya komponentlari
+    private final DALProductInterface products;
+    private final DALSalesInterface sale;
+    private final DALStoresInterface store;
+    private final MonthInterface month;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
     private final ModelMapper modelMapper;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;  // Parollarni shifrlash uchun
 
-    /**
-     * Konstruktor - Dependency Injection orqali kerakli komponentlarni oladi
-     */
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public ServiceLayer(DALProductInterface products, DALSalesInterface sale,
-            DALStoresInterface store, MonthInterface month, AuthenticationManager authenticationManager,
-            JwtTokenProvider jwtTokenProvider,
-            CustomUserDetailsService userDetailsService, ModelMapper modelMapper) {
-    	this.modelMapper = modelMapper;
+                        DALStoresInterface store, MonthInterface month,
+                        AuthenticationManager authenticationManager,
+                        JwtTokenProvider jwtTokenProvider,
+                        CustomUserDetailsService userDetailsService,
+                        ModelMapper modelMapper) {
         this.products = products;
         this.sale = sale;
         this.store = store;
@@ -66,276 +57,174 @@ public class ServiceLayer implements ServiceLayerInterface {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
+        this.modelMapper = modelMapper;
     }
 
-    /* ========= MAHSULOTLAR BO'LIMI ========= */
-    
-    /**
-     * Yangi mahsulot qo'shish
-     * @param product - qo'shiladigan mahsulot obyekti
-     */
+    // 🔐 Kullanıcıdan storeId'yi token'dan al
+    private int getCurrentStoreId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        StoreIdDto principal = (StoreIdDto) auth.getPrincipal();
+        return principal.getStoreId();
+    }
+
+    // ========== Mahsulotlar ==========
+
     @Override
     @Transactional
     public void addProduct(ProductsObject product) {
         products.save(product);
     }
 
-    /**
-     * ID bo'yicha mahsulot olish
-     * @param storeId - do'kon IDsi
-     * @param id - mahsulot IDsi
-     * @return topilgan mahsulot yoki null
-     */
     @Override
     @Transactional(readOnly = true)
-    public ProductsObject getProduct(int storeId, int id) {
-        return products.findByStoreIdAndBarcode(String.valueOf(storeId), String.valueOf(id)).orElseThrow(()-> new NoSuchElementException("Mahsulot Topilmadi"));
+    public ProductsObject getProduct(int id) {
+        int storeId = getCurrentStoreId();
+        return products.findByStoreIdAndBarcode(String.valueOf(storeId), String.valueOf(id))
+                .orElseThrow(ProductNotFoundException::new);
     }
 
-    /**
-     * Mahsulotni o'chirish
-     * @param product - o'chiriladigan mahsulot
-     */
     @Override
     @Transactional
     public void deleteProduct(ProductsObject product) {
         products.delete(product);
     }
 
-    /**
-     * Mahsulot ma'lumotlarini yangilash
-     * @param product - yangilanishi kerak bo'lgan mahsulot
-     */
     @Override
     @Transactional
     public void updateProduct(ProductsObject product) {
         products.save(product);
     }
 
-    /* ========= DO'KONLAR BO'LIMI ========= */
-    
-    /**
-     * Do'kon parolini olish
-     * @param store_id - do'kon IDsi
-     * @return parol
-     */
     @Override
     @Transactional(readOnly = true)
-    public String getPasword(int store_id) {
-        return store.getPasword(store_id).orElseThrow(()->new RuntimeException("Id yoki parol natogri"));
+    @Cacheable(value = "products", key = "#root.methodName")
+    public List<ProductsObject> getAllProducts() {
+        int storeId = getCurrentStoreId();
+        return products.findByStoreId(String.valueOf(storeId));
     }
 
-    /**
-     * Do'kon ma'lumotlarini olish
-     * @param store_id - do'kon IDsi
-     * @return do'kon ma'lumotlari
-     */
+    // ========== Do'konlar ==========
+
     @Override
     @Transactional(readOnly = true)
-    public StoreDto getStore(int store_id) {
-        return store.findByStoreId(store_id)
-                .map(storeEntity -> modelMapper.map(storeEntity, StoreDto.class))
-                .orElseThrow(() -> new NoSuchElementException("Store not found with ID: " + store_id));
-    }
-    /**
-     * Do'kondagi barcha mahsulotlarni olish
-     * @param id - do'kon IDsi
-     * @return mahsulotlar ro'yxati
-     */
-    @Cacheable(value = "products", key = "#storeId")
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductsObject> getAllProducts(int id) {
-        return products.findByStoreId(String.valueOf(id));
+    public String getPasword() {
+        int storeId = getCurrentStoreId();
+        return store.getPasword(storeId)
+                .orElseThrow(() -> new CannotGetPassword(String.valueOf(storeId)));
     }
 
-    /**
-     * Do'kon parolini yangilash
-     * @param store_id - do'kon IDsi
-     * @param newPassword - yangi parol
-     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreDto getStore() {
+        int storeId = getCurrentStoreId();
+        return store.findByStoreId(storeId)
+                .map(s -> modelMapper.map(s, StoreDto.class))
+                .orElseThrow(() -> new StoreNotFoundException(String.valueOf(storeId)));
+    }
+
     @Override
     @Transactional
-    public void updatePassword(int store_id, String newPassword) {
-        // Mavjut dokon malumotlarini ol
-        StoreDto st = getStore(store_id);
-        
-        // ModelMapper bilan DTO'dan Entity'e o'tish
-        Stores s = modelMapper.map(st, Stores.class);
-        
-        // Sadece şifreyi güncelle (diğer alanlar korunur)
+    public void updatePassword(String newPassword) {
+        int storeId = getCurrentStoreId();
+        StoreDto dto = getStore();
+        Stores s = modelMapper.map(dto, Stores.class);
         s.setPassword(passwordEncoder.encode(newPassword));
-        
-        // Kaydet
         store.save(s);
     }
 
-    /* ========= FOYDA (DAROMAD) BO'LIMI ========= */
-    
-    /**
-     * Oylik foydani yangilash
-     * @param storeId - do'kon IDsi
-     * @param date - sana
-     * @param eski - oldingi foyda
-     * @param yangi - yangi foyda
-     */
     @Override
     @Transactional
-    public void updateMonthFoyda(int storeId, LocalDate date, long eski, long yangi) {
-        long foyda = yangi + eski;
-        month.updateMonthFoyda(storeId, date, foyda);
+    public void updateStore(StoreUpdateDto dto) {
+        Stores storeEntity = store.findByStoreId(dto.getStoreId())
+                .orElseThrow(() -> new StoreNotFoundException(String.valueOf(dto.getStoreId())));
+        modelMapper.map(dto, storeEntity);
+        if (StringUtils.hasText(dto.getPassword())) {
+            storeEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
     }
 
-    /**
-     * Do'kon va oy bo'yicha foydani olish
-     * @param storeId - do'kon IDsi
-     * @param date - sana
-     * @return foyda ro'yxati
-     */
+    // ========== Foyda ==========
+
+    @Override
+    @Transactional
+    public void updateMonthFoyda(LocalDate date, long eski, long yangi) {
+        int storeId = getCurrentStoreId();
+        month.updateMonthFoyda(storeId, date, eski + yangi);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public List<MonthFoyda> getMonthFoyda(int storeId, LocalDate date) {
+    public List<MonthFoyda> getMonthFoyda(LocalDate date) {
+        int storeId = getCurrentStoreId();
         return month.findByStoreIdAndDateMonthYear(storeId, date);
     }
 
-    /**
-     * Mahsulot uchun oylik foydani yangilash
-     * @param storeId - do'kon IDsi
-     * @param productId - mahsulot IDsi
-     * @param newValue - yangi foyda qiymati
-     */
     @Override
     @Transactional
-    public void updateProductMonthFoyda(int storeId, int productId, int newValue) {
-        products.updateMonthFoyda(
-            String.valueOf(storeId),
-            String.valueOf(productId),
-            Long.valueOf(newValue)
-        );
+    public void updateProductMonthFoyda(int productId, int newValue) {
+        int storeId = getCurrentStoreId();
+        products.updateMonthFoyda(String.valueOf(storeId), String.valueOf(productId), (long) newValue);
     }
 
-    /**
-     * Mahsulot zahirasini yangilash
-     * @param storeId - do'kon IDsi
-     * @param barcode - mahsulot barkodi
-     * @param newStock - yangi zahira miqdori
-     * @return ta'sir o'tgan qatorlar soni
-     */
     @Override
     @Transactional
-    public int updateStock(String storeId, String barcode, String newStock) {
-        return products.updateStock(storeId, barcode, newStock);
+    public void updateStock(String barcode, String newStock) {
+        int storeId = getCurrentStoreId();
+        products.updateStock(String.valueOf(storeId), barcode, newStock);
     }
 
-    /**
-     * Do'kon va oy bo'yicha umumiy foydani olish
-     * @param storeId - do'kon IDsi
-     * @param date - sana
-     * @return foyda miqdori
-     */
     @Override
     @Transactional
-    public long foydaFindByStoreIdAndDateMonthYear(int storeId, LocalDate date) {
-        return month.foydaFindByStoreIdAndDateMonthYear(storeId, date).orElseThrow(()->new NoSuchElementException("Oylik foyda yuklana olmadi - mavjud bo'lmagan oyni kiritmoqdasiz"));
+    public long foydaFindByStoreIdAndDateMonthYear(LocalDate date) {
+        int storeId = getCurrentStoreId();
+        return month.foydaFindByStoreIdAndDateMonthYear(storeId, date)
+                .orElseThrow(() -> new MotnhFoydaNotFound(date));
     }
 
-    /* ========= SOTUVLAR BO'LIMI ========= */
-    
-    /**
-     * Yangi sotuv qo'shish
-     * @param s - sotuv ma'lumotlari
-     */
+    // ========== Sotuvlar ==========
+
     @Override
     @Transactional
     public void addSale(Sales s) {
         sale.save(s);
     }
 
-    /**
-     * ID bo'yicha sotuvni olish
-     * @param id - sotuv IDsi
-     * @return sotuv ma'lumotlari
-     */
     @Override
     @Transactional(readOnly = true)
     public Sales getSale(int id) {
-        return sale.getSale(id).orElseThrow(()-> new NoSuchElementException("mavjud idga oid Savdo mavjud emas"));
+        return sale.getSale(id)
+                .orElseThrow(() -> new SaleNotFoundException(String.valueOf(id)));
     }
 
-    /**
-     * Do'kon uchun barcha sotuvlarni olish
-     * @param storeId - do'kon IDsi
-     * @return sotuvlar ro'yxati
-     */
     @Override
     @Transactional(readOnly = true)
-    public List<Sales> getAllSale(int storeId) {
+    public List<Sales> getAllSale() {
+        int storeId = getCurrentStoreId();
         return sale.getAllSale(storeId);
     }
 
-    /**
-     * Do'kon uchun bugungi sotuvlarni olish
-     * @param storeId - do'kon IDsi
-     * @param date - sana
-     * @return sotuvlar ro'yxati
-     */
     @Override
     @Transactional(readOnly = true)
-    public List<Sales> getTodayAllSales(int storeId, LocalDate date) {
-        LocalDate tomorow = date.plusDays(1);
-        return sale.getTodayAllSales(storeId, date, tomorow);
+    public List<Sales> getTodayAllSales(LocalDate date) {
+        int storeId = getCurrentStoreId();
+        return sale.getTodayAllSales(storeId, date, date.plusDays(1));
     }
 
-    /* ========= DO'KON YANGILASH ========= */
-    
-    /**
-     * Do'kon ma'lumotlarini yangilash
-     * @param dto - yangi ma'lumotlar
-     */
-    @Override
-    @Transactional
-    public void updateStore(StoreUpdateDto dto) {
-        // Mevcut mağazayı bul
-        Stores storeEntity = store.findByStoreId(dto.getStoreId()).orElseThrow(()-> new RuntimeException("Do'kon topilmadi"));
-        
-        
-        // DTO'dan Entity'e güncelleme (password hariç)
-        modelMapper.map(dto, storeEntity);
-        
-        // Özel password işleme
-        if (StringUtils.hasText(dto.getPassword())) {
-            storeEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        }
-        
-    }
+    // ========== Auth ==========
 
-    /* ========= AUTENTIFIKATSIYA ========= */
-    
-    /**
-     * Tizimga kirish (login)
-     * @param request - foydalanuvchi nomi va paroli
-     * @return JWT token va boshqa ma'lumotlar
-     */
     @Override
     @Transactional
     public AuthResponse login(AuthRequest request) {
-        // Foydalanuvchi ma'lumotlarini tekshirish
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        // Foydalanuvchi ma'lumotlarini yuklash
         var userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-
-        // Foydalanuvchi rolini olish
         String role = userDetails.getAuthorities().stream()
-                .findFirst()
-                .map(auth -> auth.getAuthority())
+                .findFirst().map(a -> a.getAuthority())
                 .orElse("ROLE_USER");
 
-        // JWT token yaratish
-        String token = jwtTokenProvider.createToken(userDetails.getUsername(), role);
+        int storeId = userDetailsService.getStoreIdByUsername(request.getUsername());
+        String token = jwtTokenProvider.createToken(userDetails.getUsername(), role, storeId);
 
         return new AuthResponse(token);
     }

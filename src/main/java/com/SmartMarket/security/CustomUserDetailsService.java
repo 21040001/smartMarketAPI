@@ -41,4 +41,10 @@ public class CustomUserDetailsService implements UserDetailsService {
             List.of(new SimpleGrantedAuthority(user.getRole()))  // Foydalanuvchi roli
         );
     }
+    
+    public int getStoreIdByUsername(String username) {
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Foydalanuvchi topilmadi: " + username));
+        return user.getStore_id();
+    }
 }

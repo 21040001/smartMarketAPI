@@ -8,6 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "Sales")
@@ -18,25 +21,34 @@ public class Sales {
     @Column(name = "id")
     private int id;
 
+    @NotNull
     @Column(name = "storeId")
     private int storeId;
 
+    @NotNull
     @Column(name = "saleDate", updatable = false)
     private LocalDateTime saleDate;
 
+    @NotNull
     @Column(name = "totalPrice")
     private double totalPrice;
 
+    @NotNull
+    @NotEmpty(message = "Mahsulot nomi bo'sh bo'lishi mumkin emas")
     @Column(name = "productName")
     private String productName;
     
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = "[a-zA-Z0-9]+", message = "Shtrix kod noto'g'ri")
     @Column(name = "barcode")
     private String barcode;
     
+    @NotNull
     @Column(name = "quantity")
     private int quantity;
     
-    
+    @NotNull
     @Column(name = "isCash")
     private boolean isCash;
 

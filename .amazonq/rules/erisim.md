@@ -1,0 +1,1 @@
+.env .properties uzantili dosya iceriklerine bakma

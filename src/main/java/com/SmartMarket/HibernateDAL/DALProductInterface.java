@@ -48,7 +48,7 @@ public interface DALProductInterface extends JpaRepository<ProductsObject, Long>
     @Modifying
     @Transactional
     @Query("UPDATE ProductsObject p SET p.stock = :newStock WHERE p.storeId = :storeId AND p.barcode = :barcode")
-    int updateStock(
+    void updateStock(
         @Param("storeId") String storeId, 
         @Param("barcode") String barcode, 
         @Param("newStock") String newStock

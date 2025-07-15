@@ -1,8 +1,16 @@
 package com.SmartMarket.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class AuthRequest {
+	@NotNull
+    @NotEmpty
     private String username;
+	@NotNull
+    @NotEmpty
     private String password;
+	
     
 	public String getUsername() {
 		return username;

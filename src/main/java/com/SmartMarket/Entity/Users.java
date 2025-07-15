@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name="Users")
@@ -15,14 +18,27 @@ public class Users {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
+	
+	@NotNull
+    @NotEmpty
 	@Column(name = "username")
 	private String username;
+	
+	@NotNull
+    @NotEmpty
 	@Column(name = "password")
 	private String password;
+	
+	@NotNull
+    @NotEmpty
 	@Column(name = "role")
 	private String role;
+	
+	@NotNull
+    @Pattern(regexp = "[0-9]")
 	@Column(name = "store_id")
 	private int store_id;
+	
 	public int getId() {
 		return id;
 	}

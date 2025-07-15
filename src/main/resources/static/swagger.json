@@ -2,18 +2,53 @@
   "openapi": "3.0.3",
   "info": {
     "title": "SmartMarket API",
-    "description": "Do‘kon mahsulotlari va savdo API’si",
-    "version": "1.0.0"
+    "description": "Do'kon mahsulotlari va savdo API'si - Store ID token'dan otomatik alınır",
+    "version": "2.0.0"
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://localhost:8081"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
     }
   ],
   "paths": {
-    "/add": {
+    "/api/auth/login": {
       "post": {
-        "summary": "Mahsulot qo‘shish",
+        "summary": "Tizimga kirish",
+        "tags": ["Authentication"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Muvaffaqiyatli kirish",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "post": {
+        "summary": "Mahsulot qo'shish",
+        "tags": ["Products"],
         "requestBody": {
           "required": true,
           "content": {
@@ -26,31 +61,55 @@
         },
         "responses": {
           "201": {
-            "description": "Mahsulot muvaffaqiyatli qo‘shildi",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
+            "description": "Mahsulot muvaffaqiyatli qo'shildi"
+          }
+        }
+      },
+      "put": {
+        "summary": "Mahsulot yangilash",
+        "tags": ["Products"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductsObject"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mahsulot yangilandi"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Mahsulot o'chirish",
+        "tags": ["Products"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductsObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mahsulot o'chirildi"
           }
         }
       }
     },
-    "/product/{id}": {
+    "/api/products/{id}": {
       "get": {
-        "summary": "Id bo‘yicha mahsulot ma’lumotlarini olish",
+        "summary": "Mahsulot olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Products"],
         "parameters": [
-          {
-            "name": "storeId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Do‘kon ID si"
-          },
           {
             "name": "id",
             "in": "path",
@@ -58,12 +117,12 @@
             "schema": {
               "type": "integer"
             },
-            "description": "Mahsulot ID si"
+            "description": "Mahsulot ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "Mahsulot ma’lumotlari",
+            "description": "Mahsulot ma'lumotlari",
             "content": {
               "application/json": {
                 "schema": {
@@ -71,147 +130,56 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Mahsulot topilmadi",
+          }
+        }
+      }
+    },
+    "/api/stores": {
+      "get": {
+        "summary": "Do'kon ma'lumotlarini olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Stores"],
+        "responses": {
+          "200": {
+            "description": "Do'kon ma'lumotlari",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/StoreDto"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/delete": {
-      "post": {
-        "summary": "Mahsulot o‘chirish",
+      },
+      "put": {
+        "summary": "Do'kon yangilash",
+        "tags": ["Stores"],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProductsObject"
+                "$ref": "#/components/schemas/StoreUpdateDto"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Mahsulot o‘chirildi",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Do'kon muvaffaqiyatli yangilandi"
           }
         }
       }
     },
-    "/update": {
-      "post": {
-        "summary": "Mahsulot ma’lumotlarini yangilash",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProductsObject"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Mahsulot yangilandi",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/logIn/{id}": {
+    "/api/stores/{id}/products": {
       "get": {
-        "summary": "Do‘kon parolini olish",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Do‘kon ID si"
-          }
-        ],
+        "summary": "Do'kon mahsulotlarini olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Products"],
         "responses": {
           "200": {
-            "description": "Parol",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/store/{id}": {
-      "get": {
-        "summary": "Do‘kon ma’lumotlarini olish",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Do‘kon ID si"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Do‘kon ma’lumotlari",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Stores"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/products/{id}": {
-      "get": {
-        "summary": "Do‘kon mahsulotlarini olish",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "Do‘kon ID si"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Mahsulotlar ro‘yxati",
+            "description": "Mahsulotlar ro'yxati",
             "content": {
               "application/json": {
                 "schema": {
@@ -226,53 +194,35 @@
         }
       }
     },
-    "/update/password": {
-      "get": {
-        "summary": "Do‘kon parolini yangilash",
+    "/api/stores/password": {
+      "put": {
+        "summary": "Do'kon parolini yangilash",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Stores"],
         "parameters": [
-          {
-            "name": "store_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
           {
             "name": "newPassword",
             "in": "query",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Yangi parol"
           }
         ],
         "responses": {
           "200": {
-            "description": "Parol yangilandi",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Parol yangilandi"
           }
         }
       }
     },
-    "/update/month": {
-      "get": {
-        "summary": "Oy foydasini yangilash",
+    "/api/stores/month-foyda": {
+      "put": {
+        "summary": "Oylik foydani yangilash",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Profit"],
         "parameters": [
-          {
-            "name": "storeId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
           {
             "name": "date",
             "in": "query",
@@ -291,7 +241,7 @@
             }
           },
           {
-            "name": "yeni",
+            "name": "yangi",
             "in": "query",
             "required": true,
             "schema": {
@@ -301,30 +251,15 @@
         ],
         "responses": {
           "200": {
-            "description": "Oy foydasi yangilandi",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Oy foydasi yangilandi"
           }
         }
-      }
-    },
-    "/get/month": {
+      },
       "get": {
-        "summary": "Oy foydasini olish",
+        "summary": "Oylik foydani olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Profit"],
         "parameters": [
-          {
-            "name": "storeId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
           {
             "name": "date",
             "in": "query",
@@ -337,7 +272,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Oy foydasi ro‘yxati",
+            "description": "Oylik foyda ro'yxati",
             "content": {
               "application/json": {
                 "schema": {
@@ -351,198 +286,16 @@
           }
         }
       }
-    },	  {
-	    "paths": {
-	      "/add/sale": {
-	        "get": {
-	          "summary": "Yangi savdo qo‘shish",
-	          "description": "Yangi savdo obyektini (Sales) qo‘shadi.",
-	          "requestBody": {
-	            "required": true,
-	            "content": {
-	              "application/json": {
-	                "schema": {
-	                  "$ref": "#/components/schemas/Sales"
-	                }
-	              }
-	            }
-	          },
-	          "responses": {
-	            "200": {
-	              "description": "Savdo muvaffaqiyatli qo‘shildi",
-	              "content": {
-	                "text/plain": {
-	                  "schema": {
-	                    "type": "string"
-	                  }
-	                }
-	              }
-	            }
-	          },
-	          "tags": ["Sales"]
-	        }
-	      },
-	      "/get/sale": {
-	        "get": {
-	          "summary": "ID orqali savdoni olish",
-	          "description": "Berilgan ID bo‘yicha bitta savdoni qaytaradi.",
-	          "parameters": [
-	            {
-	              "in": "query",
-	              "name": "id",
-	              "required": true,
-	              "schema": {
-	                "type": "integer"
-	              },
-	              "description": "Savdo ID raqami"
-	            }
-	          ],
-	          "responses": {
-	            "200": {
-	              "description": "Topilgan savdo",
-	              "content": {
-	                "application/json": {
-	                  "schema": {
-	                    "$ref": "#/components/schemas/Sales"
-	                  }
-	                }
-	              }
-	            },
-	            "404": {
-	              "description": "Savdo topilmadi"
-	            }
-	          },
-	          "tags": ["Sales"]
-	        }
-	      },
-	      "/get/allsale": {
-	        "get": {
-	          "summary": "Do‘kondagi barcha savdolarni olish",
-	          "description": "Berilgan do‘kon ID uchun barcha savdolar ro‘yxatini qaytaradi.",
-	          "parameters": [
-	            {
-	              "in": "query",
-	              "name": "storeId",
-	              "required": true,
-	              "schema": {
-	                "type": "integer"
-	              },
-	              "description": "Do‘kon ID raqami"
-	            }
-	          ],
-	          "responses": {
-	            "200": {
-	              "description": "Savdolar ro‘yxati",
-	              "content": {
-	                "application/json": {
-	                  "schema": {
-	                    "type": "array",
-	                    "items": {
-	                      "$ref": "#/components/schemas/Sales"
-	                    }
-	                  }
-	                }
-	              }
-	            }
-	          },
-	          "tags": ["Sales"]
-	        }
-	      },
-	      "/get/allsale/today": {
-	        "get": {
-	          "summary": "Bugungi savdolar ro‘yxatini olish",
-	          "description": "Do‘kon ID va sana asosida bugungi savdolar ro‘yxatini qaytaradi.",
-	          "parameters": [
-	            {
-	              "in": "query",
-	              "name": "storeId",
-	              "required": true,
-	              "schema": {
-	                "type": "integer"
-	              },
-	              "description": "Do‘kon ID raqami"
-	            },
-	            {
-	              "in": "query",
-	              "name": "date",
-	              "required": true,
-	              "schema": {
-	                "type": "string",
-	                "format": "date"
-	              },
-	              "description": "Bugungi sana (yyyy-MM-dd formatida)"
-	            }
-	          ],
-	          "responses": {
-	            "200": {
-	              "description": "Bugungi savdolar ro‘yxati",
-	              "content": {
-	                "application/json": {
-	                  "schema": {
-	                    "type": "array",
-	                    "items": {
-	                      "$ref": "#/components/schemas/Sales"
-	                    }
-	                  }
-	                }
-	              }
-	            }
-	          },
-	          "tags": ["Sales"]
-	        }
-	      }
-	    },
-	    "components": {
-	      "schemas": {
-	        "Sales": {
-	          "type": "object",
-	          "properties": {
-	            "id": {
-	              "type": "integer"
-	            },
-	            "storeId": {
-	              "type": "integer"
-	            },
-	            "saleDate": {
-	              "type": "string",
-	              "format": "date-time"
-	            },
-	            "totalPrice": {
-	              "type": "number",
-	              "format": "double"
-	            },
-	            "productName": {
-	              "type": "string"
-	            },
-	            "barcode": {
-	              "type": "string"
-	            },
-	            "quantity": {
-	              "type": "integer"
-	            },
-	            "saleId": {
-	              "type": "integer"
-	            }
-	          }
-	        }
-	      }
-	    }
-	  },
-    "/update/product/foyda": {
-      "get": {
-        "summary": "Mahsulot oy foydasini yangilash",
+    },
+    "/api/stores/products/{productId}/foyda": {
+      "put": {
+        "summary": "Mahsulot foydasini yangilash",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Profit"],
         "parameters": [
           {
-            "name": "storeId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
             "name": "productId",
-            "in": "query",
+            "in": "path",
             "required": true,
             "schema": {
               "type": "integer"
@@ -559,11 +312,169 @@
         ],
         "responses": {
           "200": {
-            "description": "Mahsulot foydasi yangilandi",
+            "description": "Mahsulot foydasi yangilandi"
+          }
+        }
+      }
+    },
+    "/api/stores/products/stock": {
+      "put": {
+        "summary": "Mahsulot zahirasini yangilash",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newStock",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mahsulot miqdori yangilandi"
+          }
+        }
+      }
+    },
+    "/api/stores/foyda": {
+      "get": {
+        "summary": "Do'kon foydasini olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Profit"],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foyda miqdori",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sales": {
+      "post": {
+        "summary": "Yangi sotuv qo'shish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Sales"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sales"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Muvaffaqiyatli qo'shildi"
+          }
+        }
+      }
+    },
+    "/api/sales/{id}": {
+      "get": {
+        "summary": "Sotuvni olish",
+        "tags": ["Sales"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sotuv ma'lumotlari",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sales"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stores/sales": {
+      "get": {
+        "summary": "Barcha sotuvlarni olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Sales"],
+        "responses": {
+          "200": {
+            "description": "Sotuvlar ro'yxati",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sales"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stores/sales/today": {
+      "get": {
+        "summary": "Bugungi sotuvlarni olish",
+        "description": "Store ID token'dan otomatik alınır",
+        "tags": ["Sales"],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bugungi sotuvlar ro'yxati",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Sales"
+                  }
                 }
               }
             }
@@ -573,86 +484,180 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token ile kimlik doğrulama. Token'da store ID bilgisi bulunur."
+      }
+    },
     "schemas": {
-      "ProductsObject": {
+      "AuthRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "123",
+            "description": "Store ID"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "Store password"
+          }
+        }
+      },
+      "AuthResponse": {
         "type": "object",
         "properties": {
-          "id": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "JWT token (store ID içerir)"
+          }
+        }
+      },
+      "ProductsObject": {
+        "type": "object",
+        "required": ["barcode", "name", "stock", "costPrice", "salePrice", "foyda"],
+        "properties": {
+          "productId": {
             "type": "integer",
-            "example": 101
+            "example": 1
           },
           "storeId": {
-            "type": "integer",
-            "example": 123
+            "type": "string",
+            "example": "123",
+            "description": "Token'dan otomatik alınır"
+          },
+          "barcode": {
+            "type": "string",
+            "example": "1234567890"
           },
           "name": {
             "type": "string",
             "example": "Pomidor"
           },
+          "stock": {
+            "type": "string",
+            "example": "100"
+          },
+          "costPrice": {
+            "type": "string",
+            "example": "3000"
+          },
           "salePrice": {
-            "type": "number",
-            "format": "double",
-            "example": 3500
+            "type": "string",
+            "example": "3500"
           },
           "foyda": {
             "type": "string",
             "example": "500"
+          },
+          "monthFoyda": {
+            "type": "integer",
+            "example": 15000
           }
         }
       },
-      "Stores": {
+      "StoreDto": {
         "type": "object",
         "properties": {
           "storeId": {
             "type": "integer",
-            "example": 123
+            "example": 123,
+            "description": "Token'dan otomatik alınır"
           },
-          "storeName": {
+          "name": {
             "type": "string",
             "example": "SmartMarket"
           },
+          "adress": {
+            "type": "string",
+            "example": "Toshkent, Chilonzor"
+          },
+          "email": {
+            "type": "string",
+            "example": "info@smartmarket.uz"
+          },
+          "number": {
+            "type": "string",
+            "example": "+998901234567"
+          }
+        }
+      },
+      "StoreUpdateDto": {
+        "type": "object",
+        "required": ["name", "email", "adress", "number", "password"],
+        "properties": {
+          "storeId": {
+            "type": "integer",
+            "example": 123,
+            "description": "Token'dan otomatik alınır"
+          },
+          "name": {
+            "type": "string",
+            "example": "SmartMarket"
+          },
+          "email": {
+            "type": "string",
+            "example": "info@smartmarket.uz"
+          },
+          "adress": {
+            "type": "string",
+            "example": "Toshkent, Chilonzor"
+          },
+          "number": {
+            "type": "string",
+            "example": "+998901234567"
+          },
           "password": {
             "type": "string",
-            "example": "123456"
+            "example": "newpassword123"
           }
         }
       },
       "Sales": {
         "type": "object",
+        "required": ["saleDate", "totalPrice", "productName", "barcode", "quantity", "isCash"],
         "properties": {
           "id": {
             "type": "integer",
-            "example": 123
+            "example": 1
           },
-			"storeId": {
-			  "type": "integer",
-			  "example": 1231
-			},
+          "storeId": {
+            "type": "integer",
+            "example": 123,
+            "description": "Token'dan otomatik alınır"
+          },
           "saleDate": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-06-19T10:00:00"
+            "example": "2025-01-15T10:30:00"
           },
           "totalPrice": {
-            "type": "double",
-            "example": 10.0000
+            "type": "number",
+            "format": "double",
+            "example": 10500.0
           },
-			"productName": {
-			  "type": "string",
-			  "example": "Cola Cola"
-			},
-			"barcode": {
-			  "type": "string",
-			  "example": "12345"
-			},
-			"quantity": {
-			  "type": "integer",
-			  "example": 3
-			},
-			"saleId": {
-			  "type": "integer",
-			  "example": 1234
-			}
+          "productName": {
+            "type": "string",
+            "example": "Pomidor"
+          },
+          "barcode": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 3
+          },
+          "isCash": {
+            "type": "boolean",
+            "example": true
+          }
         }
       },
       "MonthFoyda": {
@@ -664,16 +669,17 @@
           },
           "storeId": {
             "type": "integer",
-            "example": 123
+            "example": 123,
+            "description": "Token'dan otomatik alınır"
           },
           "date": {
             "type": "string",
             "format": "date",
-            "example": "2025-06-01"
+            "example": "2025-01-01"
           },
           "monthFoyda": {
             "type": "integer",
-            "example": 5000
+            "example": 150000
           }
         }
       }

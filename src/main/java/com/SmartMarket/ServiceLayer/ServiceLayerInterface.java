@@ -11,25 +11,26 @@ import com.SmartMarket.dto.AuthRequest;
 import com.SmartMarket.dto.AuthResponse;
 import com.SmartMarket.dto.StoreDto;
 import com.SmartMarket.dto.StoreUpdateDto;
+import com.SmartMarket.exceptions.CannotGetPassword;
 
 public interface ServiceLayerInterface {
 	void addProduct(ProductsObject product);
-	ProductsObject getProduct(int storeId,int id);
+	ProductsObject getProduct(int id);
 	void deleteProduct(ProductsObject product);
 	void updateProduct(ProductsObject product);
-    String getPasword(int store_id);
-	StoreDto getStore(int store_id); //bu  yerda foydalanuvchiga parolsiz Store jo'natiladi
-	List<ProductsObject> getAllProducts(int id);
-	void updatePassword(int store_id, String newPassword);
-	void updateMonthFoyda(int storeId, LocalDate date, long eski, long yeni);
-	List<MonthFoyda> getMonthFoyda(int storeId, LocalDate date);
-	void updateProductMonthFoyda(int storeId, int productId, int newValue);
-	int updateStock(String storeId,String barcode,String newStock);
-	long foydaFindByStoreIdAndDateMonthYear(int storeId, LocalDate date);
+    String getPasword() throws CannotGetPassword;
+	StoreDto getStore(); //bu  yerda foydalanuvchiga parolsiz Store jo'natiladi
+	List<ProductsObject> getAllProducts();
+	void updatePassword( String newPassword);
+	void updateMonthFoyda( LocalDate date, long eski, long yeni);
+	List<MonthFoyda> getMonthFoyda( LocalDate date);
+	void updateProductMonthFoyda( int productId, int newValue);
+	void updateStock(String barcode,String newStock);
+	long foydaFindByStoreIdAndDateMonthYear( LocalDate date);
 	void addSale(Sales s);
 	Sales getSale(int id);
-	List<Sales> getAllSale(int storeId);
-	List<Sales> getTodayAllSales(int storeId, LocalDate date);
+	List<Sales> getAllSale();
+	List<Sales> getTodayAllSales( LocalDate date);
 	void updateStore(StoreUpdateDto s);
 	AuthResponse login(AuthRequest request);
 }

@@ -2,6 +2,8 @@ package com.SmartMarket.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -18,7 +20,8 @@ public class JwtTokenProvider {
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     
     // Token amal qilish muddati (1 soat)
-    private final long validityInMilliseconds = 3600000; 
+    @Value("${jwt.expiration}")
+    private long validityInMilliseconds; 
 
     /**
      * Yangi JWT token yaratish
@@ -26,10 +29,11 @@ public class JwtTokenProvider {
      * @param role - foydalanuvchi roli
      * @return - yaratilgan token stringi
      */
-    public String createToken(String username, String role) {
+    public String createToken(String username, String role,int storeId) {
         // Token claims (payload) qismini yaratish
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("role", role);
+        claims.put("storeId", storeId);
 
         // Token yaratilgan va amal qilish vaqtlari
         Date now = new Date();
@@ -57,6 +61,27 @@ public class JwtTokenProvider {
                    .getBody()
                    .getSubject();              // Foydalanuvchi nomini olish
     }
+    
+    public int getStoreId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        Object storeIdObj = claims.get("storeId");
+
+        if (storeIdObj instanceof Integer) {
+            return (Integer) storeIdObj;
+        } else if (storeIdObj instanceof Number) {
+            return ((Number) storeIdObj).intValue();
+        } else if (storeIdObj instanceof String) {
+            return Integer.parseInt((String) storeIdObj);
+        }
+
+        throw new IllegalArgumentException("Token içinde geçersiz storeId değeri.");
+    }
+
 
     /**
      * Tokenni tekshirish

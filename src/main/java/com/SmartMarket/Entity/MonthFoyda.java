@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "month_foyda")
@@ -18,12 +19,15 @@ public class MonthFoyda {
     @Column(name = "Id")
     private int id;
 
+    @NotNull
     @Column(name = "storeId")
     private int storeId;
 
+    @NotNull
     @Column(name = "date", updatable = false)
     private LocalDate date;
 
+    @NotNull
     @Column(name = "monthFoyda")
     private long monthFoyda;
 

@@ -1,8 +1,18 @@
 package com.SmartMarket.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 public class LoginRequestDto {
+	@NotNull
+    @NotEmpty
 	private String username;
+	@NotNull
+    @NotEmpty
 	private String password;
+	@NotNull
+    @Pattern(regexp = "[0-9]")
 	private Long storeId;
 	
 	public String getUsername() {

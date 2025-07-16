@@ -83,7 +83,7 @@ public class Controller implements ControllerInterface {
     // Do'kondagi barcha mahsulotlarni olish (Admin, Super admin va Ko'ruvchilar uchun)
     @Override
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
-    @GetMapping("/stores/{id}/products")
+    @GetMapping("/stores/products")
     public ResponseEntity<List<ProductsObject>> getAllProducts() {
         return ResponseEntity.ok(service.getAllProducts());
     }

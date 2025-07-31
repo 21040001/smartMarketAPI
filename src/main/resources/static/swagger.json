@@ -172,7 +172,7 @@
         }
       }
     },
-    "/api/stores/{id}/products": {
+    "/api/stores/products": {
       "get": {
         "summary": "Do'kon mahsulotlarini olish",
         "description": "Store ID token'dan otomatik alınır",
@@ -272,7 +272,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Oylik foyda ro'yxati",
+            "description": "Oylik foyda ro'yxati, kunlarga ko'ra alohida-alohida jo'natiladi",
             "content": {
               "application/json": {
                 "schema": {

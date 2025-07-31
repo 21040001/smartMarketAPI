@@ -20,89 +20,89 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/*@Configuration Annatotion bu sinif ichida proyektning boshlang'ich tuzatmalarii 
+ * qilinganinini bildiradi yani ishga tushurganimizda ilk ilk ishga tushuriladigan sinif
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    // Foydalanuvchi ma'lumotlarini yuklovchi maxsus servis
-    private final CustomUserDetailsService userDetailsService;
-    
-    // JWT token filtri
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	// Foydalanuvchi ma'lumotlarini yuklovchi maxsus servis
+	private final CustomUserDetailsService userDetailsService;
 
-    // Konstruktor orqali dependency injection
-    public SecurityConfig(CustomUserDetailsService userDetailsService, 
-                        JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.userDetailsService = userDetailsService;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
+	// JWT token filtri
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // Parolni shifrlash uchun bean
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // BCrypt algoritmi
-    }
+	// Konstruktor orqali dependency injection
+	public SecurityConfig(CustomUserDetailsService userDetailsService,
+			JwtAuthenticationFilter jwtAuthenticationFilter) {
+		this.userDetailsService = userDetailsService;
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+	}
 
-    // Autentifikatsiya menedjeri
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+	// Parolni shifrlash uchun bean
+	// BCrypt algoritmi bilan
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(); 
+	}
 
-    // Autentifikatsiya provayderi
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Foydalanuvchi servisi
-        authProvider.setPasswordEncoder(passwordEncoder()); // Parol shifrlash
-        return authProvider;
-    }
+	// Autentifikatsiya menedjeri
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
 
-    // Asosiy xavfsizlik zanjiri
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            // CSRF himoyasini o'chirish (REST API uchun kerak emas)
-            .csrf(AbstractHttpConfigurer::disable)
-            
-            // Sessiyasiz ishlash rejimi
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            
-            // Autentifikatsiya xatolari uchun ishlovchi
-            .exceptionHandling(exception -> exception
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Kirish mumkin emas");
-                })
-            )
-            
-            // So'rovlarga ruxsat berish
-            .authorizeHttpRequests(auth -> auth
-                // Quyidagi endpointlar ruxsatsiz ishlatilishi mumkin
-                .requestMatchers(
-                    "/api/auth/login",               // Kirish endpointi
-                    "/v3/api-docs/**",               // Swagger dokumentatsiyasi
-                    "/swagger-ui/**",                // Swagger UI
-                    "/swagger-ui.html"               // Swagger bosh sahifasi
-                ).permitAll()
-                
-                // Qolgan barcha so'rovlar autentifikatsiya talab qiladi
-                .anyRequest().authenticated()
-            )
-            
-            // Autentifikatsiya provayderini qo'shish
-            .authenticationProvider(authenticationProvider())
-            
-            // JWT filtrini qo'shish
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+	// Autentifikatsiya provayderi
+	@Bean
+	public DaoAuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService); // Foydalanuvchi servisi
+		authProvider.setPasswordEncoder(passwordEncoder()); // Parol shifrlash
+		return authProvider;
+	}
 
-        return http.build();
-    }
-    //MApper otomatik obyekt mappinglari uchun ishlatiladi
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+	// Asosiy xavfsizlik zanjiri
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+				// CSRF himoyasini o'chirish (REST API uchun kerak emas)
+				.csrf(AbstractHttpConfigurer::disable)
+
+				// Sessiyasiz ishlash rejimi
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+				// Autentifikatsiya xatolari uchun ishlovchi
+				.exceptionHandling(
+						exception -> exception.authenticationEntryPoint((request, response, authException) -> {
+							response.sendError(HttpStatus.UNAUTHORIZED.value(), "Kirish mumkin emas");
+						}))
+
+				// So'rovlarga ruxsat berish
+				.authorizeHttpRequests(auth -> auth
+						// Quyidagi endpointlar ruxsatsiz ishlatilishi mumkin
+						.requestMatchers("/api/auth/login", // Kirish endpointi
+								"/v3/api-docs/**", // Swagger dokumentatsiyasi
+								"/swagger-ui/**", // Swagger UI
+								"/swagger-ui.html" // Swagger bosh sahifasi
+						).permitAll()
+
+						// Qolgan barcha so'rovlar autentifikatsiya talab qiladi
+						.anyRequest().authenticated())
+
+				// Autentifikatsiya provayderini qo'shish
+				.authenticationProvider(authenticationProvider())
+
+				// JWT filtrini qo'shish
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
+	// MApper otomatik obyekt mappinglari uchun ishlatiladi
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
 }

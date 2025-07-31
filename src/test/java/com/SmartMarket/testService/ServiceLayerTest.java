@@ -3,7 +3,10 @@ package com.SmartMarket.testService;
 import com.SmartMarket.dto.*;
 import com.SmartMarket.Entity.*;
 import com.SmartMarket.HibernateDAL.*;
+import com.SmartMarket.ServiceLayer.MonthServiceInterfcae;
+import com.SmartMarket.ServiceLayer.ProductServiceInterface;
 import com.SmartMarket.ServiceLayer.ServiceLayerInterface;
+import com.SmartMarket.ServiceLayer.StoresServiceInterface;
 import com.SmartMarket.security.*;
 
 import org.junit.jupiter.api.Assertions;
@@ -25,8 +28,13 @@ import java.util.Optional;
 @SpringBootTest
 public class ServiceLayerTest {
 
+    
     @Autowired
-    private ServiceLayerInterface serviceLayer;
+    private MonthServiceInterfcae month;
+    @Autowired
+    private StoresServiceInterface store;
+    @Autowired
+    private ProductServiceInterface products;
 
     @MockBean private DALProductInterface productRepo;
     @MockBean private DALSalesInterface saleRepo;
@@ -48,7 +56,7 @@ public class ServiceLayerTest {
         Mockito.when(productRepo.findByStoreIdAndBarcode("123", "456"))
                .thenReturn(Optional.of(product));
 
-        ProductsObject result = serviceLayer.getProduct( 456);
+        ProductsObject result = products.getProduct(256);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals("123", result.getStoreId());
@@ -62,7 +70,7 @@ public class ServiceLayerTest {
                .thenReturn(Optional.empty());
 
         Assertions.assertThrows(NoSuchElementException.class, () -> {
-            serviceLayer.getProduct( 999);
+            products.getProduct(256);
         });
     }
 
@@ -89,7 +97,7 @@ public class ServiceLayerTest {
         Mockito.when(modelMapper.map(storeEntity, StoreDto.class)).thenReturn(dto);
 
         // Act
-        serviceLayer.updatePassword( "newpass");
+        store.updatePassword( "newpass");
 
         // Assert
         Mockito.verify(storeRepo).save(Mockito.argThat(s ->
@@ -104,7 +112,7 @@ public class ServiceLayerTest {
         Mockito.when(monthRepo.foydaFindByStoreIdAndDateMonthYear(1, LocalDate.of(2025, 7, 1)))
                .thenReturn(Optional.of(5000L));
 
-        long result = serviceLayer.foydaFindByStoreIdAndDateMonthYear( LocalDate.of(2025, 7, 1));
+        long result = month.foydaFindByStoreIdAndDateMonthYear( LocalDate.of(2025, 7, 1));
 
         Assertions.assertEquals(5000L, result);
     }
@@ -116,7 +124,7 @@ public class ServiceLayerTest {
                .thenReturn(Optional.empty());
 
         Assertions.assertThrows(NoSuchElementException.class, () -> {
-            serviceLayer.foydaFindByStoreIdAndDateMonthYear( LocalDate.of(2025, 7, 1));
+            month.foydaFindByStoreIdAndDateMonthYear( LocalDate.of(2025, 7, 1));
         });
     }
 
@@ -127,7 +135,7 @@ public class ServiceLayerTest {
     void test_getPassword_shouldReturn_whenFound() {
         Mockito.when(storeRepo.getPasword(1)).thenReturn(Optional.of("1234"));
 
-        String password = serviceLayer.getPasword();
+        String password = store.getPasword();
 
         Assertions.assertEquals("1234", password);
     }
@@ -138,7 +146,7 @@ public class ServiceLayerTest {
         Mockito.when(storeRepo.getPasword(99)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(RuntimeException.class, () -> {
-            serviceLayer.getPasword();
+            store.getPasword();
         });
     }
 
@@ -152,7 +160,7 @@ public class ServiceLayerTest {
         Mockito.when(storeRepo.findByStoreId(1)).thenReturn(Optional.of(s));
         Mockito.when(modelMapper.map(s, StoreDto.class)).thenReturn(dto);
 
-        StoreDto result = serviceLayer.getStore();
+        StoreDto result = store.getStore();
 
         Assertions.assertEquals(1, result.getStoreId());
     }

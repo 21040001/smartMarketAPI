@@ -19,7 +19,7 @@ public class JwtTokenProvider {
     // Token uchun maxfiy kalit (avtomatik yaratiladi)
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     
-    // Token amal qilish muddati (1 soat)
+    // Token amal qilish muddati 
     @Value("${jwt.expiration}")
     private long validityInMilliseconds; 
 

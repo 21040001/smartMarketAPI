@@ -14,6 +14,12 @@ import com.SmartMarket.dto.StoreIdDto;
 
 import java.io.IOException;
 
+/*
+ * bu sinif so'rov ichida kelgan tokenni yaroqli yoki yaroqsiz ekanligini kontrol etadi. 
+ * yaroqli bo'lsa foydalanuvchi kirdi degan holatda davom etadi. aks holda foydalanuvchi 
+ * so'rovini amalga oshirmaydi va takrordan kirishini so'raydi
+ * */
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -50,7 +56,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                      userDetails.getAuthorities()
                  );
 
-                
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 // Kullanıcıyı SecurityContext'e kaydet

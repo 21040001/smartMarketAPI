@@ -17,25 +17,41 @@ import com.SmartMarket.dto.AuthRequest;
 import com.SmartMarket.dto.AuthResponse;
 import com.SmartMarket.dto.StoreDto;
 import com.SmartMarket.dto.StoreUpdateDto;
+import com.SmartMarket.ServiceLayer.MonthService;
+import com.SmartMarket.ServiceLayer.ProductService;
+import com.SmartMarket.ServiceLayer.SalesService;
 import com.SmartMarket.ServiceLayer.ServiceLayer;
+import com.SmartMarket.ServiceLayer.StoresService;
 
 @RestController
 @RequestMapping("/api")
 public class Controller implements ControllerInterface {
 
     private final ServiceLayer service;
+    private final ProductService products;
+    private final MonthService month;
+    private final SalesService sale;
+    private final StoresService store;
 
-    public Controller(ServiceLayer service) {
-        this.service = service;
-    }
+   
 
-    /* Mahsulotlar bilan ishlash */
+    public Controller(ServiceLayer service, ProductService product, MonthService month, SalesService sale,
+			StoresService store) {
+		super();
+		this.service = service;
+		this.products = product;
+		this.month = month;
+		this.sale = sale;
+		this.store = store;
+	}
+
+	/* Mahsulotlar bilan ishlash */
     // Yangi mahsulot qo'shish (Admin va Super admin uchun)
     @Override
     @PreAuthorize("hasAnyRole('ADMIN','SUPER')")
     @PostMapping("/products")
     public ResponseEntity<String> addProduct(@Valid @RequestBody ProductsObject product) {
-        service.addProduct(product);
+        products.addProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body("Mahsulot muvaffaqiyatli qo'shildi");
     }
 
@@ -44,7 +60,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductsObject> getProduct(@PathVariable("id") int id) {
-        ProductsObject product = service.getProduct(id);
+        ProductsObject product = products.getProduct(id);
         if (product != null) {
             return ResponseEntity.ok(product);
         } else {
@@ -57,7 +73,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER')")
     @DeleteMapping("/products")
     public ResponseEntity<String> deleteProduct(@Valid @RequestBody ProductsObject product) {
-        service.deleteProduct(product);
+        products.deleteProduct(product);
         return ResponseEntity.ok("Mahsulot o'chirildi");
     }
 
@@ -66,7 +82,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER')")
     @PutMapping("/products")
     public ResponseEntity<String> updateProduct(@Valid @RequestBody ProductsObject product) {
-        service.updateProduct(product);
+        products.updateProduct(product);
         return ResponseEntity.ok("Mahsulot yangilandi");
     }
 
@@ -77,7 +93,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/stores")
     public ResponseEntity<StoreDto> getStore() {
-        return ResponseEntity.ok(service.getStore());
+        return ResponseEntity.ok(store.getStore());
     }
 
     // Do'kondagi barcha mahsulotlarni olish (Admin, Super admin va Ko'ruvchilar uchun)
@@ -85,7 +101,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/stores/products")
     public ResponseEntity<List<ProductsObject>> getAllProducts() {
-        return ResponseEntity.ok(service.getAllProducts());
+        return ResponseEntity.ok(products.getAllProducts());
     }
 
     // Do'kon parolini yangilash (Admin va Super admin uchun)
@@ -94,7 +110,7 @@ public class Controller implements ControllerInterface {
     @PutMapping("/stores/password")
     public ResponseEntity<String> updatePassword(
             @RequestParam String newPassword) {
-        service.updatePassword( newPassword);
+        store.updatePassword( newPassword);
         return ResponseEntity.ok("Parol yangilandi");
     }
 
@@ -108,7 +124,7 @@ public class Controller implements ControllerInterface {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam long eski,
             @RequestParam long yangi) {
-        service.updateMonthFoyda( date, eski, yangi);
+        month.updateMonthFoyda( date, eski, yangi);
         return ResponseEntity.ok("Oy foydasi yangilandi");
     }
 
@@ -118,7 +134,7 @@ public class Controller implements ControllerInterface {
     @GetMapping("/stores/month-foyda")
     public ResponseEntity<List<MonthFoyda>> getMonthFoyda(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(service.getMonthFoyda(date));
+        return ResponseEntity.ok(month.getMonthFoyda(date));
     }
 
     // Mahsulot foydasini yangilash (Admin va Super admin uchun)
@@ -128,7 +144,7 @@ public class Controller implements ControllerInterface {
     public ResponseEntity<String> updateProductMonthFoyda(
             @PathVariable int productId,
             @RequestParam int newValue) {
-        service.updateProductMonthFoyda( productId, newValue);
+        products.updateProductMonthFoyda( productId, newValue);
         return ResponseEntity.ok("Mahsulot foydasi yangilandi");
     }
 
@@ -141,7 +157,7 @@ public class Controller implements ControllerInterface {
     public ResponseEntity<String> updateStock(
             @RequestParam String barcode,
             @RequestParam String newStock) {
-    	service.updateStock( barcode, newStock);
+    	products.updateStock( barcode, newStock);
         return ResponseEntity.ok("Mahsulot miqdori yangilandi");
     }
 
@@ -151,7 +167,7 @@ public class Controller implements ControllerInterface {
     @GetMapping("/stores/foyda")
     public ResponseEntity<Long> foydaFindByStoreIdAndDateMonthYear(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(service.foydaFindByStoreIdAndDateMonthYear( date));
+        return ResponseEntity.ok(month.foydaFindByStoreIdAndDateMonthYear( date));
     }
 
     // Yangi sotuv qo'shish (Admin, Super admin va Kassirlar uchun)
@@ -159,7 +175,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @PostMapping("/sales")
     public ResponseEntity<String> addSale(@Valid @RequestBody Sales s) {
-        service.addSale(s);
+        sale.addSale(s);
         return ResponseEntity.ok("Muvaffaqiyatli qo'shildi");
     }
 
@@ -168,7 +184,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/sales/{id}")
     public ResponseEntity<Sales> getSale(@PathVariable int id) {
-        return ResponseEntity.ok(service.getSale(id));
+        return ResponseEntity.ok(sale.getSale(id));
     }
 
     // Barcha sotuvlarni olish (Admin, Super admin va Kassirlar uchun)
@@ -176,7 +192,7 @@ public class Controller implements ControllerInterface {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
     @GetMapping("/stores/sales")
     public ResponseEntity<List<Sales>> getAllSale() {
-        return ResponseEntity.ok(service.getAllSale());
+        return ResponseEntity.ok(sale.getAllSale());
     }
 
     // Bugungi sotuvlarni olish (Admin, Super admin va Kassirlar uchun)
@@ -185,15 +201,15 @@ public class Controller implements ControllerInterface {
     @GetMapping("/stores/sales/today")
     public ResponseEntity<List<Sales>> getTodayAllSales(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(service.getTodayAllSales( date));
+        return ResponseEntity.ok(sale.getTodayAllSales( date));
     }
 
-    // Do'kon ma'lumotlarini yangilash (Admin va Super admin uchun)
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER')")
+    // Do'kon ma'lumotlarini yangilash (Super uchun)
+    @PreAuthorize("hasAnyRole('SUPER')")
     @PutMapping("/stores")
-    public ResponseEntity<String> updateStore(@Valid @RequestBody StoreUpdateDto store) {
-        service.updateStore(store);
-        return ResponseEntity.ok("Do'kon muvaffaqiyatli yangilandi");
+    public ResponseEntity<String> updateStore(@Valid @RequestBody StoreUpdateDto stores) {
+        store.updateStore(stores);
+        return ResponseEntity.ok("Do'kon ma'lumotlari muvaffaqiyatli yangilandi.");
     }
     
     /* Autentifikatsiya */

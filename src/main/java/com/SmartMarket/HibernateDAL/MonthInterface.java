@@ -55,6 +55,7 @@ public interface MonthInterface extends JpaRepository<MonthFoyda, Long> {
         @Param("date") LocalDate date
     );
     
+    /*bu kunlik foydani olishda yordam beradi olishda store_id va berilgan tarihdan foydalanadi*/
     @Query(value="Select month_foyda from month_foyda where store_id = :storeId AND date = :date", nativeQuery= true)
     Optional<Long> foydaFindByStoreIdAndDateMonthYear(
     		@Param("storeId") int storeId, 

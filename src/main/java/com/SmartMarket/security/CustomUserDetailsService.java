@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Foydalanuvchi nomi bo'yicha foydalanuvchi ma'lumotlarini yuklash
+     * Foydalanuvchi nomi bo'yicha foydalanuvchi ma'lumotlarini oladi
      * @param username - tizimga kirish uchun ishlatiladigan foydalanuvchi nomi
      * @return UserDetails - Spring Security uchun foydalanuvchi ma'lumotlari
      * @throws UsernameNotFoundException - Agar foydalanuvchi topilmasa

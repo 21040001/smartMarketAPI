@@ -39,25 +39,25 @@ public class ProductsObject {
 	
 	@NotNull
     @NotEmpty
-    @Pattern(regexp = "[0-9]+", message = "Zaxira faqat raqam bo'lishi kerak")
+    @Pattern(regexp = "[0-9]+", message = "Zaxira faqat raqam bo'lishi kerak.")
 	@Column(name = "stock")
 	private String stock;
 	
 	@NotNull
     @NotEmpty
-    @Pattern(regexp = "[0-9.]+", message = "Tan narxi noto'g'ri")
+    @Pattern(regexp = "[0-9.]+", message = "Tan narxi noto'g'ri.")
 	@Column(name = "costPrice")
 	private String costPrice;
 	
 	@NotNull
     @NotEmpty
-    @Pattern(regexp = "[0-9.]+", message = "Sotuv narxi noto'g'ri")
+    @Pattern(regexp = "[0-9.]+", message = "Sotuv narxi noto'g'ri.")
 	@Column(name = "salePrice")
 	private String salePrice;
 	
 	@NotNull
     @NotEmpty
-    @Pattern(regexp = "[0-9.]+", message = "Foyda noto'g'ri")
+    @Pattern(regexp = "[0-9.]+", message = "Foyda noto'g'ri.")
 	@Column(name = "foyda")
 	private String foyda;
 	
@@ -65,6 +65,9 @@ public class ProductsObject {
 	@Column(name = "monthFoyda")
 	private Long monthFoyda;
 	
+	@NotNull(message = "Mahsulot turu tanlang, iltimos.")
+	@Column(name = "type")
+	private String type;
 	
 	public int getProductId() {
 		return productId;
@@ -119,6 +122,12 @@ public class ProductsObject {
 	}
 	public void setMonthFoyda(Long monthFoyda) {
 		this.monthFoyda = monthFoyda;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	

@@ -40,7 +40,7 @@ public class ProductService implements ProductServiceInterface{
 	public ProductsObject getProduct(int id) {
 		 int storeId = getCurrentStoreId();
 	        return products.findByStoreIdAndBarcode(String.valueOf(storeId), String.valueOf(id))
-	                .orElseThrow(ProductNotFoundException::new);
+	                .orElseThrow(() -> new ProductNotFoundException(String.valueOf(id)));
 	}
 
 	@Override

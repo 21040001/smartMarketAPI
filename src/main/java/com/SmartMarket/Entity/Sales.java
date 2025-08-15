@@ -46,7 +46,7 @@ public class Sales {
     
     @NotNull
     @Column(name = "quantity")
-    private int quantity;
+    private Double quantity;
     
     @NotNull
     @Column(name = "isCash")
@@ -100,11 +100,11 @@ public class Sales {
 		this.barcode = barcode;
 	}
 
-	public int getQuantity() {
+	public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 

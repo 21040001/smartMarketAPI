@@ -3,6 +3,7 @@ package com.SmartMarket.Control;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +58,7 @@ public class Controller implements ControllerInterface {
 	@Override
 	@PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
 	@GetMapping("/products/{id}")
-	public ResponseEntity<ProductsObject> getProduct(@PathVariable("id") int id) {
+	public ResponseEntity<ProductsObject> getProduct(@PathVariable("id") String id) {
 		ProductsObject product = products.getProduct(id);
 		if (product != null) {
 			return ResponseEntity.ok(product);
@@ -134,15 +135,7 @@ public class Controller implements ControllerInterface {
 		return ResponseEntity.ok(month.getMonthFoyda(date));
 	}
 
-	// Mahsulot foydasini yangilash (Admin va Super admin uchun)
-	@Override
-	@PreAuthorize("hasAnyRole('ADMIN','SUPER','CASHIER')")
-	@PutMapping("/stores/products/{productId}/foyda")
-	public ResponseEntity<String> updateProductMonthFoyda(@PathVariable int productId, @RequestParam int newValue) {
-		products.updateProductMonthFoyda(productId, newValue);
-		return ResponseEntity.ok("Mahsulot foydasi yangilandi");
-	}
-
+	
 	/* Sotuvlar bilan ishlash */
 
 	// Mahsulot zahirasini yangilash (Admin va Super admin uchun)

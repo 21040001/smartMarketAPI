@@ -12,8 +12,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 @Entity
-@Table(name="Products")
-public class ProductsObject {
+@Table(name="ProductsKg")
+public class ProductKgObject {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class ProductsObject {
 	
 	@NotNull
     @NotEmpty
-    @Pattern(regexp = "[0-9]+", message = "Zaxira faqat raqam bo'lishi kerak.")
+    @Pattern(regexp = "[a-zA-Z0-9]+", message = "Mahsulotni miqdorini to'g'ri kiriting.")
 	@Column(name = "stock")
 	private String stock;
 	
@@ -60,6 +60,8 @@ public class ProductsObject {
     @Pattern(regexp = "[0-9.]+", message = "Foyda noto'g'ri.")
 	@Column(name = "foyda")
 	private String foyda;
+	
+	
 	
 	@NotNull(message = "Mahsulot turu tanlang, iltimos.")
 	@Column(name = "type")
@@ -119,7 +121,4 @@ public class ProductsObject {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	
-	
 }

@@ -13,7 +13,7 @@ import com.SmartMarket.dto.StoreUpdateDto;
 
 public interface ControllerInterface {
 	ResponseEntity<String> addProduct(ProductsObject product);
-	ResponseEntity<ProductsObject> getProduct(int id);
+	ResponseEntity<ProductsObject> getProduct(String id);
 	ResponseEntity<String> deleteProduct(ProductsObject product);
 	ResponseEntity<String> updateProduct(ProductsObject product);
 	ResponseEntity<StoreDto> getStore();
@@ -21,7 +21,6 @@ public interface ControllerInterface {
 	ResponseEntity<String> updatePassword( String newPassword);
 	ResponseEntity<String> updateMonthFoyda( LocalDate date, long eski, long yeni);
 	ResponseEntity<List<MonthFoyda>> getMonthFoyda( LocalDate date);
-	ResponseEntity<String> updateProductMonthFoyda( int productId, int newValue);
 	ResponseEntity<String>updateStock(String barcode,String newStock);
 	ResponseEntity<Long> foydaFindByStoreIdAndDateMonthYear( LocalDate date);
 	ResponseEntity<String> addSale(Sales s);

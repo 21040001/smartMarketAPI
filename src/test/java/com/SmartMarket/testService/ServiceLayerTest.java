@@ -56,7 +56,7 @@ public class ServiceLayerTest {
         Mockito.when(productRepo.findByStoreIdAndBarcode("123", "456"))
                .thenReturn(Optional.of(product));
 
-        ProductsObject result = products.getProduct(256);
+        ProductsObject result = products.getProduct("256");
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals("123", result.getStoreId());
@@ -70,7 +70,7 @@ public class ServiceLayerTest {
                .thenReturn(Optional.empty());
 
         Assertions.assertThrows(NoSuchElementException.class, () -> {
-            products.getProduct(256);
+            products.getProduct("256");
         });
     }
 
@@ -127,9 +127,7 @@ public class ServiceLayerTest {
             month.foydaFindByStoreIdAndDateMonthYear( LocalDate.of(2025, 7, 1));
         });
     }
-
     
-
     // getPasword - varsa
     @Test
     void test_getPassword_shouldReturn_whenFound() {
@@ -144,7 +142,6 @@ public class ServiceLayerTest {
     @Test
     void test_getPassword_shouldThrow_whenNotFound() {
         Mockito.when(storeRepo.getPasword(99)).thenReturn(Optional.empty());
-
         Assertions.assertThrows(RuntimeException.class, () -> {
             store.getPasword();
         });

@@ -7,17 +7,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.SmartMarket.Entity.ProductsObject;
-import com.SmartMarket.HibernateDAL.DALProductInterface;
+import com.SmartMarket.Entity.ProductKgObject;
+import com.SmartMarket.HibernateDAL.DALProductKgInterface;
 import com.SmartMarket.dto.StoreIdDto;
 import com.SmartMarket.exceptions.ProductNotFoundException;
 
 @Service
-public class ProductService implements ProductServiceInterface {
+public class ProductKgService implements ProductKgInterface {
 
-	private final DALProductInterface products;
+	private final DALProductKgInterface products;
 
-	public ProductService(DALProductInterface products) {
+	public ProductKgService(DALProductKgInterface products) {
 		super();
 		this.products = products;
 	}
@@ -31,13 +31,13 @@ public class ProductService implements ProductServiceInterface {
 
 	@Override
 	@Transactional
-	public void addProduct(ProductsObject product) {
+	public void addProduct(ProductKgObject product) {
 		products.save(product);
 	}
 
 	@Override
 	@Transactional
-	public ProductsObject getProduct(String id) {
+	public ProductKgObject getProduct(String id) {
 		int storeId = getCurrentStoreId();
 		return products.findByStoreIdAndBarcode(String.valueOf(storeId), id)
 				.orElseThrow(() -> new ProductNotFoundException(String.valueOf(id)));
@@ -45,19 +45,20 @@ public class ProductService implements ProductServiceInterface {
 
 	@Override
 	@Transactional
-	public void deleteProduct(ProductsObject product) {
+	public void deleteProduct(ProductKgObject product) {
 		products.delete(product);
 	}
 
 	@Override
 	@Transactional
-	public void updateProduct(ProductsObject product) {
+	public void updateProduct(ProductKgObject product) {
 		products.save(product);
 	}
 
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductsObject> getAllProducts() {
+	public List<ProductKgObject> getAllProducts() {
 		int storeId = getCurrentStoreId();
 		return products.findByStoreId(String.valueOf(storeId));
 	}
@@ -68,5 +69,4 @@ public class ProductService implements ProductServiceInterface {
 		int storeId = getCurrentStoreId();
 		products.updateStock(String.valueOf(storeId), barcode, newStock);
 	}
-
 }

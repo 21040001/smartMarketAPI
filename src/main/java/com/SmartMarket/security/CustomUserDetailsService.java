@@ -1,7 +1,7 @@
 package com.SmartMarket.security;
 
-import com.SmartMarket.Entity.Users;
-import com.SmartMarket.HibernateDAL.UserDAL;
+import com.SmartMarket.entity.Users;
+import com.SmartMarket.hibernateDAL.UserDAL;
 
 import java.util.List;
 

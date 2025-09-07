@@ -46,7 +46,7 @@ public class SalesService implements SalesServiceInterface {
 	public void addSale(Sales s) {
 		sale.save(s);
 		bot.sendMessage(getCurrentStoreId(), "💰🛒 [" + getCurrentUserName() + "] yangi savdo amalga oshirdi: "
-				+ "Savdo miqdori: " + s.getTotalPrice() + ",000 UZS ✅");
+				+ "Savdo miqdori: " + s.getTotalPrice() + "00 UZS ✅");
 	}
 
 	@Override

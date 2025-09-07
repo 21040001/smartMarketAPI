@@ -23,7 +23,6 @@ import com.SmartMarket.serviceLayer.ProductService;
 import com.SmartMarket.serviceLayer.SalesService;
 import com.SmartMarket.serviceLayer.ServiceLayer;
 import com.SmartMarket.serviceLayer.StoresService;
-import com.SmartMarket.telegramBot.TelegramBot;
 
 @RestController
 @RequestMapping("/api")

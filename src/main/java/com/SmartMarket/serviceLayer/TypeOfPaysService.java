@@ -1,5 +1,7 @@
 package com.SmartMarket.serviceLayer;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.SmartMarket.dto.StoreIdDto;
 import com.SmartMarket.dto.TypeOfPayDTO;
+import com.SmartMarket.entity.Payment;
 import com.SmartMarket.entity.TypeOfPay;
 import com.SmartMarket.hibernateDAL.DALTypeOfPay;
 
@@ -18,11 +21,18 @@ public class TypeOfPaysService implements TypeOfPaysServiceInterface {
 	
 	private DALTypeOfPay pay;
 	private final ModelMapper modelMapper;
+	private PaymentsService service;
+	private CustomerService customer;
+	
+	
 
-	public TypeOfPaysService(DALTypeOfPay pay, ModelMapper modelMapper) {
+	public TypeOfPaysService(DALTypeOfPay pay, ModelMapper modelMapper, PaymentsService service,
+			CustomerService customer) {
 		super();
 		this.pay = pay;
 		this.modelMapper = modelMapper;
+		this.service = service;
+		this.customer = customer;
 	}
 
 	private int getCurrentStoreId() {
@@ -64,12 +74,30 @@ public class TypeOfPaysService implements TypeOfPaysServiceInterface {
 	}
 
 	@Override
-	public void addPays(TypeOfPayDTO t) {
+	public void addPays(TypeOfPayDTO t, String note, Long customerId) {
 		int storeId = getCurrentStoreId();
 		TypeOfPay object = modelMapper.map(t, TypeOfPay.class);
 		object.setStoreId(storeId);
 		object.setId(0);
-		pay.save(object);
+		TypeOfPay saved = pay.save(object);
+		System.out.println("id=>"+customerId);
+		if(t.getTypeOfPay().equalsIgnoreCase("debt")) {
+			Payment p = new Payment();
+			LocalDate today = LocalDate.now();
+			BigDecimal b = new BigDecimal(t.getTotalAmmaount());
+			p.setAmount(b);
+			p.setCustomerId(customerId);
+			p.setInvoiceId(saved.getId());
+			p.setMethod("unpaid");
+			p.setNotes(note);
+			p.setPaidAmount(BigDecimal.ZERO);
+			p.setPaymentDate(today);
+			p.setPaymentId(0L);
+			p.setStoreId(storeId);
+			p.setType("debt");
+			service.addPayment(p);
+			customer.addDebt(customerId, t.getTotalAmmaount());
+		}
 	}
 
 }

@@ -19,6 +19,7 @@ public class TypeOfPayController implements TypeOfPayControllerInterface{
 	
 	private TypeOfPaysServiceInterface pays;
 	
+	
 	public TypeOfPayController(TypeOfPaysServiceInterface pays) {
 		super();
 		this.pays = pays;
@@ -59,8 +60,8 @@ public class TypeOfPayController implements TypeOfPayControllerInterface{
 
 	@Override
 	@PostMapping("/add")
-	public ResponseEntity<String> addPays(@RequestBody TypeOfPayDTO t) {
-		pays.addPays(t);
+	public ResponseEntity<String> addPays(@RequestBody TypeOfPayDTO t, @RequestParam String note, @RequestParam Long customerId) {
+		pays.addPays(t, note, customerId);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Muvaffaqiyatli qo'shildi");
 	}
 

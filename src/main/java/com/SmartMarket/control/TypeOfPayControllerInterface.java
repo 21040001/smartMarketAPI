@@ -11,6 +11,6 @@ public interface TypeOfPayControllerInterface {
 	ResponseEntity<List<TypeOfPayDTO>> getAllTypePays( String type);
 	ResponseEntity<List<TypeOfPayDTO>> getAll();
 	ResponseEntity<List<TypeOfPayDTO>> getAllPaysByKassier( String cashier);
-	ResponseEntity<String> addPays(TypeOfPayDTO t);
+	ResponseEntity<String> addPays(TypeOfPayDTO t, String note, Long customerId);
 	
 }

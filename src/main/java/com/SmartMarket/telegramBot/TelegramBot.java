@@ -1,6 +1,7 @@
 package com.SmartMarket.telegramBot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,6 +22,22 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 	@Autowired
 	private StoresServiceInterface service;
+	
+	@Value("${telegram.bot.token}")
+    private String botToken;
+
+    @Value("${telegram.bot.username}")
+    private String botUsername;
+
+    @Override
+    public String getBotUsername() {
+        return botUsername;
+    }
+
+    @Override
+    public String getBotToken() {
+        return botToken;
+    }
 
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -171,13 +188,4 @@ public class TelegramBot extends TelegramLongPollingBot {
 		return username.equals("123") && password.equals("1234");
 	}
 
-	@Override
-	public String getBotUsername() {
-		return "smartMarketKuzatuvchi_bot";
-	}
-
-	@Override
-	public String getBotToken() {
-		return "8425617596:AAGY5W2BgyXyODFMpkfvghLrtL6z45kxRbY";
-	}
 }

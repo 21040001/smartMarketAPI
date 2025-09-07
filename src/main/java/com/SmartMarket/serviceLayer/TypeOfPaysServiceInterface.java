@@ -9,5 +9,5 @@ public interface TypeOfPaysServiceInterface {
 	List<TypeOfPayDTO> getAllTypePays( String type);
 	List<TypeOfPayDTO> getAll();
 	List<TypeOfPayDTO> getAllPaysByKassier( String cashier);
-	void addPays(TypeOfPayDTO t);
+	void addPays(TypeOfPayDTO t, String note, Long customerId);
 }

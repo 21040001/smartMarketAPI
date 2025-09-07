@@ -84,7 +84,7 @@ public class SecurityConfig {
 						// Quyidagi endpointlar ruxsatsiz ishlatilishi mumkin
 						.requestMatchers("/api/auth/login", // Kirish endpointi
 								"/api-docs/**", // Swagger dokumentatsiyasi
-								"/swagger-ui/**", // Swagger UI
+								"/swagger.json", // Swagger UI
 								"/swagger-ui.html" // Swagger bosh sahifasi
 						).permitAll()
 

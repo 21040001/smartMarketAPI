@@ -25,7 +25,7 @@ public class TypeOfPay {
 	private String typeOfPay;
 	
 	@Column(name = "amountOfCash")
-	private double amountOfCash;
+	private double amountOfCash; 
 	
 	@Column(name = "totalAmount")
 	private double totalAmmaount;

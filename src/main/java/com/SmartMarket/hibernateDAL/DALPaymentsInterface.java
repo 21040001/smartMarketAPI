@@ -32,7 +32,7 @@ public interface DALPaymentsInterface extends JpaRepository<Payment, Long> {
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE payments SET paid_amount = CASE WHEN paid_amount = :amount THEN 20 ELSE paid_amount + :amount END, method = :method, type = CASE WHEN amount = (CASE WHEN paid_amount = :amount THEN 10 ELSE paid_amount + :amount END) THEN 'paid' ELSE 'debt' END WHERE payment_id = :paymentId", nativeQuery = true)
+	@Query(value = "UPDATE payments SET paid_amount = CASE WHEN paid_amount = amount THEN amount ELSE paid_amount + :amount END, method = :method, type = CASE WHEN amount = (CASE WHEN paid_amount = :amount THEN 10 ELSE paid_amount + :amount END) THEN 'paid' ELSE 'debt' END WHERE payment_id = :paymentId", nativeQuery = true)
 	void donePay(@Param("paymentId") Long paymentId, @Param("amount") Double amount, @Param("method") String method);
 
 }

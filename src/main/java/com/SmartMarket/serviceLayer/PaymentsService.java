@@ -53,6 +53,7 @@ public class PaymentsService implements PaymentsServiceInterface{
 
 	@Override
 	public void addPayment(Payment p) {
+		p.setStoreId(getCurrentStoreId());
 		repo.save(p);
 	}
 
